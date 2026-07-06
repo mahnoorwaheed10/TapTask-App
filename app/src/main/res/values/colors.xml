@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="primary">#4F46E5</color>
+    <color name="primary_dark">#3730A3</color>
+    <color name="violet">#7C3AED</color>
+    <color name="amber">#F59E0B</color>
+    <color name="green">#10B981</color>
+    <color name="red">#EF4444</color>
+    <color name="bg">#F0F4FF</color>
+    <color name="card">#FFFFFF</color>
+    <color name="text_main">#0F172A</color>
+    <color name="muted">#64748B</color>
+    <color name="border">#E2E8F0</color>
+    <color name="white">#FFFFFF</color>
+    <color name="black">#000000</color>
+
+    <color name="splash_bg_top">#1E1B4B</color>
+    <color name="splash_bg_mid">#312E81</color>
+    <color name="splash_bg_bottom">#4F46E5</color>
+    <color name="splash_accent">#818CF8</color>
+
+    <color name="badge_green_bg">#D1FAE5</color>
+    <color name="badge_green_text">#065F46</color>
+    <color name="badge_red_bg">#FEE2E2</color>
+    <color name="badge_red_text">#991B1B</color>
+    <color name="badge_blue_bg">#DBEAFE</color>
+    <color name="badge_blue_text">#1E40AF</color>
+    <color name="badge_amber_bg">#FEF3C7</color>
+    <color name="badge_amber_text">#92400E</color>
+</resources>

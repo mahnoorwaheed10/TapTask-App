@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">TapTask</string>
+    <string name="tagline">Professional Services Platform</string>
+    <string name="splash_tagline">Professional Services, One Tap Away</string>
+
+    <string name="welcome_back">Welcome Back 👋</string>
+    <string name="signin_subtitle">Sign in to your TapTask account</string>
+    <string name="tab_signin">Sign In</string>
+    <string name="tab_signup">Sign Up</string>
+    <string name="continue_google">Continue with Google</string>
+    <string name="or_email">or continue with email</string>
+    <string name="or_form">or fill the form</string>
+    <string name="email_address">Email Address</string>
+    <string name="password">Password</string>
+    <string name="forgot_password">Forgot password?</string>
+    <string name="sign_in_btn">Sign In →</string>
+    <string name="no_account">Don\'t have an account?</string>
+    <string name="full_name">Full Name</string>
+    <string name="phone_number">Phone Number</string>
+    <string name="city_area">City / Area</string>
+    <string name="create_account_btn">Create Account →</string>
+    <string name="have_account">Already have an account?</string>
+    <string name="i_am_a">I am a:</string>
+    <string name="role_customer">👤 Customer</string>
+    <string name="role_worker">🔨 Worker</string>
+    <string name="role_admin">🛡️ Admin</string>
+
+    <string name="hero_title">Book Trusted Professionals\nNear You — Instantly.</string>
+    <string name="hero_subtitle">Home services, shop visits &amp; online consultations in your area.</string>
+    <string name="search_hint">What service do you need?</string>
+    <string name="find_now">Find Now</string>
+    <string name="filter_by_area">📍 Filter by Area:</string>
+    <string name="browse_categories">Browse Service Categories</string>
+    <string name="browse_subtitle">Choose how you\'d like to receive your service</string>
+
+    <string name="cat_home_title">Home Services</string>
+    <string name="cat_home_desc">Professional comes to your doorstep. Electricians, plumbers, cleaners &amp; more.</string>
+    <string name="cat_shop_title">Shop Visit</string>
+    <string name="cat_shop_desc">Visit the professional at their location. Tailors, mechanics, tutors &amp; more.</string>
+    <string name="cat_online_title">Online Services</string>
+    <string name="cat_online_desc">Virtual services from anywhere. Online tutors, consultations &amp; freelancers.</string>
+    <string name="explore_services">Explore Services →</string>
+
+    <string name="view_profile">View Profile</string>
+    <string name="send_request">Send Request</string>
+    <string name="book_now">📅 Book Now</string>
+
+    <string name="book_service">Book Service</string>
+    <string name="preferred_date">📅 Preferred Date</string>
+    <string name="time_slot">🕐 Time Slot</string>
+    <string name="describe_issue">📝 Describe Your Issue</string>
+    <string name="your_address">📍 Your Address</string>
+    <string name="continue_payment">Continue to Payment →</string>
+    <string name="select_payment_method">SELECT PAYMENT METHOD</string>
+    <string name="cash_on_delivery">Cash on Delivery</string>
+    <string name="cash_desc">Pay after service is completed</string>
+    <string name="easypaisa">EasyPaisa</string>
+    <string name="easypaisa_desc">Send payment via EasyPaisa</string>
+    <string name="jazzcash">JazzCash</string>
+    <string name="jazzcash_desc">Send payment via JazzCash</string>
+    <string name="order_summary">ORDER SUMMARY</string>
+    <string name="back">← Back</string>
+    <string name="confirm_send_request">✅ Confirm &amp; Send Request</string>
+
+    <string name="send_payment_to">Send Payment To This Number</string>
+    <string name="send_payment_instruction">Send the exact amount to the number below using your %1$s app, then upload a screenshot as proof.</string>
+    <string name="copy_number">📋 Copy Number</string>
+    <string name="upload_screenshot">📎 Upload Payment Screenshot</string>
+    <string name="ive_sent_payment">✅ I\'ve Sent the Payment</string>
+
+    <string name="my_bookings">My Bookings</string>
+    <string name="my_bookings_subtitle">All your service requests and their status</string>
+
+    <string name="chat">Chat</string>
+    <string name="type_message">Type a message...</string>
+    <string name="mark_completed">✅ Mark as Completed</string>
+
+    <string name="invoice">Invoice</string>
+    <string name="print_download">🖨️ Print / Download Invoice</string>
+    <string name="rate_experience">⭐ Rate Your Experience</string>
+    <string name="warranty_notice">🛡️ This service is covered under TapTask\'s 15-Day Warranty Policy</string>
+
+    <string name="welcome_worker">Welcome back!</string>
+    <string name="manage_bookings">Manage your bookings and requests</string>
+    <string name="status_label">Status:</string>
+    <string name="total_earned">Total Earned</string>
+    <string name="jobs_completed">Jobs Completed</string>
+    <string name="avg_rating">Avg Rating</string>
+    <string name="pending_requests">Pending Requests</string>
+    <string name="incoming_requests">🔔 Incoming Requests</string>
+    <string name="active_jobs">🔨 Active Jobs</string>
+    <string name="accept">✅ Accept</string>
+    <string name="decline">❌ Decline</string>
+
+    <string name="admin_dashboard">Admin Dashboard</string>
+    <string name="admin_subtitle">Platform overview &amp; management</string>
+    <string name="pending_worker_verification">Pending Worker Verification</string>
+    <string name="total_users">Total Users</string>
+    <string name="total_workers">Total Workers</string>
+    <string name="total_bookings">Total Bookings</string>
+    <string name="total_revenue">Total Revenue</string>
+    <string name="manage_users">👥 Manage Users</string>
+    <string name="manage_workers">🔨 Manage Workers</string>
+    <string name="manage_bookings_admin">📋 Manage Bookings</string>
+    <string name="manage_areas">📍 Manage Areas</string>
+    <string name="manage_payments">💳 Payment Settings</string>
+    <string name="recent_activity">Recent Activity</string>
+
+    <string name="logout">🚪 Logout</string>
+    <string name="my_profile">👤 My Profile</string>
+    <string name="back_to_categories">← Back to Categories</string>
+    <string name="back_to_subcategories">← Back to Sub-Categories</string>
+    <string name="back_to_bookings">← Back to Bookings</string>
+    <string name="back_to_home">← Back to Home</string>
+</resources>

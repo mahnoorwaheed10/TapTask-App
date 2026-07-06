@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "803454655756",
+    "project_id": "taptask-19ef2",
+    "storage_bucket": "taptask-19ef2.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:803454655756:android:06959e20cefe3525643d29",
+        "android_client_info": {
+          "package_name": "com.example.taptask"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDc5suLNfqN3ctvK7uTAm7DqYwTeT82qik"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
