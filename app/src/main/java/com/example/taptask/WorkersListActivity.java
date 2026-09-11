@@ -2,31 +2,69 @@ package com.example.taptask;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.Gravity;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 
 public class WorkersListActivity extends AppCompatActivity {
+
+    // ============================================================
+    // INTENT EXTRAS
+    // ============================================================
 
     public static final String EXTRA_SUB_CAT = "sub_cat";
     public static final String EXTRA_SUB_CAT_TITLE = "sub_cat_title";
 
+    // ============================================================
+    // VIEWS
+    // ============================================================
+
     private LinearLayout workersContainer;
     private TextView tvCategoryTitle;
     private TextView btnBack;
-    private String subCatKey;
 
-    // Filter pills
-    private TextView pillAll, pillTench, pillSaddar;
+    private TextView pillAll;
+    private TextView pillTench;
+    private TextView pillSaddar;
+
+    // ============================================================
+    // AREA
+    // ============================================================
+
     private String selectedArea = "All";
+
+    // ============================================================
+    // FIREBASE
+    // ============================================================
+
+    private FirebaseFirestore db;
+
+    // ============================================================
+    // CATEGORY
+    // ============================================================
+
+    private String subCatKey;
+    private String subCatTitle;
+
+    // ============================================================
+    // ON CREATE
+    // ============================================================
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_workers_list);
 
         workersContainer = findViewById(R.id.workersContainer);
@@ -37,258 +75,1258 @@ public class WorkersListActivity extends AppCompatActivity {
         pillTench = findViewById(R.id.pillTench);
         pillSaddar = findViewById(R.id.pillSaddar);
 
-        subCatKey = getIntent().getStringExtra(EXTRA_SUB_CAT);
-        String subCatTitle = getIntent().getStringExtra(EXTRA_SUB_CAT_TITLE);
+        db = FirebaseFirestore.getInstance();
 
-        if (subCatKey == null) subCatKey = "electrician";
-        if (subCatTitle == null) subCatTitle = "Workers";
+        // ========================================================
+        // GET CATEGORY
+        // ========================================================
+
+        subCatKey =
+                getIntent().getStringExtra(EXTRA_SUB_CAT);
+
+        subCatTitle =
+                getIntent().getStringExtra(EXTRA_SUB_CAT_TITLE);
+
+        if (subCatKey == null ||
+                subCatKey.trim().isEmpty()) {
+
+            subCatKey = "electrician";
+        }
+
+        if (subCatTitle == null ||
+                subCatTitle.trim().isEmpty()) {
+
+            subCatTitle = "Workers";
+        }
 
         tvCategoryTitle.setText(subCatTitle);
 
-        setupFilterPills();
-        loadWorkers();
+        // ========================================================
+        // SETUP
+        // ========================================================
 
-        btnBack.setOnClickListener(v -> finish());
+        setupFilterPills();
+
+        btnBack.setOnClickListener(
+                v -> finish()
+        );
+
+        // ========================================================
+        // DEFAULT AREA
+        // ========================================================
+
+        selectArea("All");
     }
 
+    // ============================================================
+    // AREA FILTERS
+    // ============================================================
+
     private void setupFilterPills() {
-        pillAll.setOnClickListener(v -> selectArea("All"));
-        pillTench.setOnClickListener(v -> selectArea("Tench Bhatta"));
-        pillSaddar.setOnClickListener(v -> selectArea("Saddar"));
+
+        pillAll.setOnClickListener(
+                v -> selectArea("All")
+        );
+
+        pillTench.setOnClickListener(
+                v -> selectArea("Tench Bhatta")
+        );
+
+        pillSaddar.setOnClickListener(
+                v -> selectArea("Saddar")
+        );
     }
 
     private void selectArea(String area) {
+
         selectedArea = area;
 
-        // Reset all pills to inactive
-        pillAll.setBackgroundResource(R.drawable.bg_role_btn_inactive);
-        pillTench.setBackgroundResource(R.drawable.bg_role_btn_inactive);
-        pillSaddar.setBackgroundResource(R.drawable.bg_role_btn_inactive);
+        // RESET ALL
+        pillAll.setBackgroundResource(
+                R.drawable.bg_role_btn_inactive
+        );
 
-        // Highlight selected pill
-        if (area.equals("All")) {
-            pillAll.setBackgroundResource(R.drawable.bg_role_btn_active);
-        } else if (area.equals("Tench Bhatta")) {
-            pillTench.setBackgroundResource(R.drawable.bg_role_btn_active);
-        } else if (area.equals("Saddar")) {
-            pillSaddar.setBackgroundResource(R.drawable.bg_role_btn_active);
+        pillTench.setBackgroundResource(
+                R.drawable.bg_role_btn_inactive
+        );
+
+        pillSaddar.setBackgroundResource(
+                R.drawable.bg_role_btn_inactive
+        );
+
+        // SELECTED
+        if ("Tench Bhatta".equalsIgnoreCase(area)) {
+
+            pillTench.setBackgroundResource(
+                    R.drawable.bg_role_btn_active
+            );
+
+        } else if ("Saddar".equalsIgnoreCase(area)) {
+
+            pillSaddar.setBackgroundResource(
+                    R.drawable.bg_role_btn_active
+            );
+
+        } else {
+
+            pillAll.setBackgroundResource(
+                    R.drawable.bg_role_btn_active
+            );
         }
 
-        loadWorkers();
+        loadWorkersFromFirebase();
     }
 
-    private List<WorkerData> getWorkers() {
-        List<WorkerData> list = new ArrayList<>();
+    // ============================================================
+    // LOAD WORKERS FROM FIREBASE
+    // ============================================================
 
-        switch (subCatKey) {
-            case "electrician":
-                list.add(new WorkerData("Usman Tariq", "Certified Electrician", "Tench Bhatta", "7 years", "Rs. 800/visit", 4.9f, 142, true));
-                list.add(new WorkerData("Bilal Hussain", "Electrician", "Saddar", "4 years", "Rs. 600/visit", 4.6f, 89, false));
-                list.add(new WorkerData("Zaid Malik", "Senior Electrician", "Tench Bhatta", "5 years", "Rs. 700/visit", 4.7f, 113, true));
-                break;
-            case "plumber":
-                list.add(new WorkerData("Kashif Raza", "Master Plumber", "Saddar", "8 years", "Rs. 700/visit", 4.8f, 201, true));
-                list.add(new WorkerData("Imran Shah", "Plumber", "Tench Bhatta", "3 years", "Rs. 500/visit", 4.5f, 67, false));
-                list.add(new WorkerData("Rizwan Ahmed", "Senior Plumber", "Saddar", "6 years", "Rs. 650/visit", 4.7f, 98, true));
-                break;
-            case "cleaner":
-                list.add(new WorkerData("Nasreen Bibi", "Deep Cleaning Expert", "Tench Bhatta", "5 years", "Rs. 1,200/visit", 4.9f, 178, true));
-                list.add(new WorkerData("Sadia Noor", "Home Cleaner", "Saddar", "2 years", "Rs. 900/visit", 4.4f, 54, true));
-                list.add(new WorkerData("Rubina Kausar", "Professional Cleaner", "Tench Bhatta", "4 years", "Rs. 1,000/visit", 4.6f, 91, false));
-                break;
-            case "tailor":
-                list.add(new WorkerData("Hira Textiles", "Master Tailor", "Saddar", "10 years", "Rs. 500/suit", 4.9f, 312, true));
-                list.add(new WorkerData("Malik Darzi", "Tailor", "Saddar", "7 years", "Rs. 400/suit", 4.7f, 189, false));
-                list.add(new WorkerData("Zara Stitches", "Fashion Tailor", "Tench Bhatta", "5 years", "Rs. 600/suit", 4.8f, 143, true));
-                break;
-            case "mechanic":
-                list.add(new WorkerData("Ali Auto Works", "Senior Mechanic", "Tench Bhatta", "12 years", "Rs. 1,000/visit", 4.8f, 267, true));
-                list.add(new WorkerData("Tariq Motors", "Auto Mechanic", "Saddar", "9 years", "Rs. 900/visit", 4.6f, 198, false));
-                list.add(new WorkerData("Pak Garage", "General Mechanic", "Tench Bhatta", "6 years", "Rs. 800/visit", 4.5f, 112, true));
-                break;
-            case "tutor_shop":
-                list.add(new WorkerData("Sir Hamid Khan", "Senior Tutor", "Saddar", "8 years", "Rs. 1,500/hr", 4.9f, 234, true));
-                list.add(new WorkerData("Miss Ayesha Naz", "English & Biology Tutor", "Tench Bhatta", "5 years", "Rs. 1,200/hr", 4.8f, 167, true));
-                list.add(new WorkerData("Sir Faisal Qureshi", "Entry Test Specialist", "Saddar", "10 years", "Rs. 1,800/hr", 4.9f, 289, false));
-                break;
-            case "home_tutor":
-                list.add(new WorkerData("Sir Junaid Ali", "Online Math & Science Tutor", "Online", "6 years", "Rs. 800/hr", 4.9f, 198, true));
-                list.add(new WorkerData("Miss Sana Fatima", "Online Language Tutor", "Online", "4 years", "Rs. 700/hr", 4.7f, 134, true));
-                list.add(new WorkerData("Sir Asad Iqbal", "IB & Cambridge Tutor", "Online", "7 years", "Rs. 1,000/hr", 4.8f, 211, false));
-                break;
-            case "consultation":
-                list.add(new WorkerData("Dr. Amna Siddiqui", "General Physician (Online)", "Online", "9 years", "Rs. 2,000/session", 5.0f, 445, true));
-                list.add(new WorkerData("Dr. Rehan Baig", "Nutritionist", "Online", "11 years", "Rs. 2,500/session", 4.9f, 312, true));
-                list.add(new WorkerData("Adv. Sara Malik", "Legal Consultant", "Online", "6 years", "Rs. 3,000/session", 4.8f, 178, false));
-                break;
-            case "freelancer":
-                list.add(new WorkerData("Hamza Dev", "Full Stack Developer", "Online", "5 years", "Rs. 5,000/project", 4.9f, 156, true));
-                list.add(new WorkerData("Zainab Designs", "Graphic Designer", "Online", "4 years", "Rs. 3,000/project", 4.8f, 223, false));
-                list.add(new WorkerData("Ali Content", "Content Writer & SEO", "Online", "3 years", "Rs. 2,000/project", 4.7f, 89, true));
-                break;
-        }
-        return list;
-    }
+    private void loadWorkersFromFirebase() {
 
-    private void loadWorkers() {
         workersContainer.removeAllViews();
 
-        List<WorkerData> allWorkers = getWorkers();
-        List<WorkerData> filteredList = new ArrayList<>();
+        TextView loading = new TextView(this);
 
-        for (WorkerData worker : allWorkers) {
-            if (selectedArea.equals("All") || worker.area.equals(selectedArea)) {
-                filteredList.add(worker);
+        loading.setText("Loading workers...");
+        loading.setTextSize(14);
+
+        loading.setTextColor(
+                getResources().getColor(R.color.muted)
+        );
+
+        loading.setGravity(Gravity.CENTER);
+
+        loading.setPadding(
+                0,
+                dp(30),
+                0,
+                dp(30)
+        );
+
+        workersContainer.addView(loading);
+
+        db.collection("workers")
+                .get()
+                .addOnSuccessListener(querySnapshot -> {
+
+                    workersContainer.removeAllViews();
+
+                    List<WorkerData> workers =
+                            new ArrayList<>();
+
+                    String selectedCategory =
+                            normalizeCategory(subCatKey);
+
+                    // ====================================================
+                    // READ EVERY WORKER
+                    // ====================================================
+
+                    for (DocumentSnapshot document :
+                            querySnapshot.getDocuments()) {
+
+                        // CATEGORY
+                        String category =
+                                getField(
+                                        document,
+                                        "category",
+                                        "serviceCategory",
+                                        "service_category"
+                                );
+
+                        String subCategory =
+                                getField(
+                                        document,
+                                        "subCategory",
+                                        "subcategory",
+                                        "sub_category"
+                                );
+
+                        category =
+                                normalizeCategory(category);
+
+                        subCategory =
+                                normalizeCategory(subCategory);
+
+                        // ====================================================
+                        // CATEGORY MATCH
+                        // ====================================================
+
+                        boolean categoryMatches =
+                                category.equals(selectedCategory)
+                                        ||
+                                        subCategory.equals(selectedCategory);
+
+                        if (!categoryMatches) {
+                            continue;
+                        }
+
+                        // ====================================================
+                        // BASIC INFORMATION
+                        // ====================================================
+
+                        String name =
+                                getField(
+                                        document,
+                                        "name"
+                                );
+
+                        String title =
+                                getField(
+                                        document,
+                                        "title"
+                                );
+
+                        // ====================================================
+                        // AREA
+                        // ====================================================
+
+                        String area =
+                                getField(
+                                        document,
+                                        "area",
+                                        "location",
+                                        "serviceArea",
+                                        "service_area"
+                                );
+
+                        // ====================================================
+                        // EXPERIENCE
+                        // ====================================================
+
+                        String experience =
+                                getField(
+                                        document,
+                                        "experience",
+                                        "workExperience",
+                                        "work_experience",
+                                        "yearsExperience",
+                                        "years_experience"
+                                );
+
+                        // ====================================================
+                        // RATE
+                        // ====================================================
+
+                        String rate =
+                                getField(
+                                        document,
+                                        "rate",
+                                        "Rate",
+                                        "RATE",
+                                        "ratePerHour",
+                                        "hourlyRate",
+                                        "price"
+                                );
+
+                        // ====================================================
+                        // DEFAULT VALUES
+                        // ====================================================
+
+                        if (name.isEmpty()) {
+                            name = "Unknown Worker";
+                        }
+
+                        if (title.isEmpty()) {
+                            title = "Worker";
+                        }
+
+                        if (area.isEmpty()) {
+                            area = "Unknown";
+                        }
+
+                        // ====================================================
+                        // AREA FILTER
+                        // ====================================================
+
+                        boolean areaMatches =
+                                "All".equalsIgnoreCase(selectedArea)
+                                        ||
+                                        area.equalsIgnoreCase(selectedArea);
+
+                        if (!areaMatches) {
+                            continue;
+                        }
+
+                        // ====================================================
+                        // RATING
+                        // ====================================================
+
+                        float rating =
+                                getFloatField(
+                                        document,
+                                        "rating"
+                                );
+
+                        // ====================================================
+                        // REVIEWS
+                        // ====================================================
+
+                        int reviews =
+                                getIntField(
+                                        document,
+                                        "reviews"
+                                );
+
+                        // ====================================================
+                        // AVAILABILITY
+                        // ====================================================
+
+                        boolean isAvailable =
+                                getBooleanField(
+                                        document,
+                                        "isAvailable",
+                                        "available",
+                                        "availability"
+                                );
+
+                        // ====================================================
+                        // ADD WORKER
+                        // ====================================================
+
+                        workers.add(
+                                new WorkerData(
+                                        name,
+                                        title,
+                                        area,
+                                        experience,
+                                        rate,
+                                        rating,
+                                        reviews,
+                                        isAvailable
+                                )
+                        );
+                    }
+
+                    // ====================================================
+                    // NO WORKERS
+                    // ====================================================
+
+                    if (workers.isEmpty()) {
+
+                        showEmptyMessage();
+                        return;
+                    }
+
+                    // ====================================================
+                    // DISPLAY ALL MATCHING WORKERS
+                    // ====================================================
+
+                    for (WorkerData worker : workers) {
+
+                        workersContainer.addView(
+                                createWorkerCard(worker)
+                        );
+                    }
+
+                })
+                .addOnFailureListener(e -> {
+
+                    workersContainer.removeAllViews();
+
+                    TextView errorText =
+                            new TextView(this);
+
+                    errorText.setText(
+                            "Could not load workers"
+                    );
+
+                    errorText.setTextSize(14);
+
+                    errorText.setTextColor(
+                            getResources().getColor(
+                                    R.color.red
+                            )
+                    );
+
+                    errorText.setGravity(
+                            Gravity.CENTER
+                    );
+
+                    errorText.setPadding(
+                            0,
+                            dp(30),
+                            0,
+                            dp(30)
+                    );
+
+                    workersContainer.addView(
+                            errorText
+                    );
+
+                    Toast.makeText(
+                            this,
+                            "Firebase error: "
+                                    + e.getMessage(),
+                            Toast.LENGTH_LONG
+                    ).show();
+                });
+    }
+    // ============================================================
+    // GET FIELD
+    // ============================================================
+
+    private String getField(
+            DocumentSnapshot document,
+            String... fieldNames
+    ) {
+
+        // FIRST: EXACT FIELD NAMES
+        for (String fieldName : fieldNames) {
+
+            Object value =
+                    document.get(fieldName);
+
+            if (value != null) {
+
+                String result =
+                        getFirestoreValueAsString(value);
+
+                if (!result.isEmpty()) {
+                    return result;
+                }
             }
         }
 
-        if (filteredList.isEmpty()) {
-            TextView emptyText = new TextView(this);
-            emptyText.setText("No workers found in " + selectedArea);
-            emptyText.setTextColor(getResources().getColor(R.color.muted));
-            emptyText.setTextSize(14);
-            emptyText.setPadding(0, dp(20), 0, 0);
-            emptyText.setGravity(android.view.Gravity.CENTER);
-            workersContainer.addView(emptyText);
-            return;
+        // SECOND: CASE-INSENSITIVE SEARCH
+        Map<String, Object> data =
+                document.getData();
+
+        if (data != null) {
+
+            for (String wantedField :
+                    fieldNames) {
+
+                for (Map.Entry<String, Object> entry :
+                        data.entrySet()) {
+
+                    String actualField =
+                            entry.getKey();
+
+                    if (actualField == null) {
+                        continue;
+                    }
+
+                    if (actualField.trim()
+                            .equalsIgnoreCase(
+                                    wantedField.trim()
+                            )) {
+
+                        Object value =
+                                entry.getValue();
+
+                        if (value != null) {
+
+                            String result =
+                                    getFirestoreValueAsString(
+                                            value
+                                    );
+
+                            if (!result.isEmpty()) {
+                                return result;
+                            }
+                        }
+                    }
+                }
+            }
         }
 
-        for (WorkerData worker : filteredList) {
-            workersContainer.addView(createWorkerCard(worker));
+        return "";
+    }
+
+    // ============================================================
+    // FIRESTORE VALUE → STRING
+    // ============================================================
+
+    private String getFirestoreValueAsString(
+            Object value
+    ) {
+
+        if (value == null) {
+            return "";
+        }
+
+        if (value instanceof Number) {
+
+            Number number =
+                    (Number) value;
+
+            double doubleValue =
+                    number.doubleValue();
+
+            if (doubleValue ==
+                    Math.floor(doubleValue)) {
+
+                return String.valueOf(
+                        (long) doubleValue
+                );
+            }
+
+            return String.valueOf(
+                    doubleValue
+            ).trim();
+        }
+
+        return String.valueOf(value)
+                .trim();
+    }
+
+    // ============================================================
+    // FLOAT FIELD
+    // ============================================================
+
+    private float getFloatField(
+            DocumentSnapshot document,
+            String... fieldNames
+    ) {
+
+        String value =
+                getField(
+                        document,
+                        fieldNames
+                );
+
+        if (value.isEmpty()) {
+            return 0f;
+        }
+
+        try {
+
+            return Float.parseFloat(
+                    value.trim()
+            );
+
+        } catch (Exception e) {
+
+            return 0f;
         }
     }
 
-    private LinearLayout createWorkerCard(WorkerData worker) {
-        LinearLayout card = new LinearLayout(this);
-        card.setOrientation(LinearLayout.VERTICAL);
-        card.setBackgroundResource(R.drawable.bg_card);
-        card.setPadding(dp(16), dp(16), dp(16), dp(16));
+    // ============================================================
+    // INTEGER FIELD
+    // ============================================================
 
-        LinearLayout.LayoutParams cardParams = new LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-        cardParams.bottomMargin = dp(12);
-        card.setLayoutParams(cardParams);
+    private int getIntField(
+            DocumentSnapshot document,
+            String... fieldNames
+    ) {
 
-        // Name + Status badge row
-        LinearLayout nameRow = new LinearLayout(this);
-        nameRow.setOrientation(LinearLayout.HORIZONTAL);
-        nameRow.setGravity(android.view.Gravity.CENTER_VERTICAL);
+        String value =
+                getField(
+                        document,
+                        fieldNames
+                );
 
-        TextView name = new TextView(this);
-        name.setText(worker.name);
-        name.setTextColor(getResources().getColor(R.color.text_main));
-        name.setTextSize(16);
-        name.setTypeface(null, android.graphics.Typeface.BOLD);
-        LinearLayout.LayoutParams nameParams = new LinearLayout.LayoutParams(
-                0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f);
-        name.setLayoutParams(nameParams);
-        nameRow.addView(name);
-
-        TextView statusBadge = new TextView(this);
-        if (worker.isAvailable) {
-            statusBadge.setText("🟢 Available");
-            statusBadge.setTextColor(getResources().getColor(R.color.green));
-        } else {
-            statusBadge.setText("🔴 Busy");
-            statusBadge.setTextColor(getResources().getColor(R.color.red));
+        if (value.isEmpty()) {
+            return 0;
         }
-        statusBadge.setTextSize(12);
-        statusBadge.setTypeface(null, android.graphics.Typeface.BOLD);
-        nameRow.addView(statusBadge);
 
-        card.addView(nameRow);
+        try {
 
-        TextView title = new TextView(this);
-        title.setText(worker.title);
-        title.setTextColor(getResources().getColor(R.color.primary));
-        title.setTextSize(13);
-        card.addView(title);
+            return Integer.parseInt(
+                    value.trim()
+            );
 
-        TextView details = new TextView(this);
-        details.setText("📍 " + worker.area + "  •  " + worker.experience + "  •  ⭐ " + worker.rating + " (" + worker.reviews + ")");
-        details.setTextColor(getResources().getColor(R.color.muted));
-        details.setTextSize(12);
-        LinearLayout.LayoutParams detailsParams = new LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-        detailsParams.topMargin = dp(6);
-        details.setLayoutParams(detailsParams);
-        card.addView(details);
+        } catch (Exception e) {
 
-        TextView rate = new TextView(this);
-        rate.setText(worker.rate);
-        rate.setTextColor(getResources().getColor(R.color.green));
-        rate.setTextSize(14);
-        rate.setTypeface(null, android.graphics.Typeface.BOLD);
-        LinearLayout.LayoutParams rateParams = new LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-        rateParams.topMargin = dp(8);
-        rateParams.bottomMargin = dp(12);
-        rate.setLayoutParams(rateParams);
+            try {
+
+                return (int) Float.parseFloat(
+                        value.trim()
+                );
+
+            } catch (Exception ignored) {
+
+                return 0;
+            }
+        }
+    }
+
+    // ============================================================
+    // BOOLEAN FIELD
+    // ============================================================
+
+    private boolean getBooleanField(
+            DocumentSnapshot document,
+            String... fieldNames
+    ) {
+
+        String value =
+                getField(
+                        document,
+                        fieldNames
+                );
+
+        if (value.isEmpty()) {
+            return false;
+        }
+
+        return Boolean.parseBoolean(
+                value.trim()
+        );
+    }
+    // ============================================================
+    // CATEGORY NORMALIZATION
+    // ============================================================
+
+    private String normalizeCategory(
+            String category
+    ) {
+
+        if (category == null) {
+            return "";
+        }
+
+        String value =
+                category
+                        .trim()
+                        .toLowerCase(Locale.US);
+
+        value = value.replace(
+                "&",
+                "and"
+        );
+
+        value = value.replaceAll(
+                "[^a-z0-9]+",
+                "_"
+        );
+
+        value = value.replaceAll(
+                "_+",
+                "_"
+        );
+
+        if (value.startsWith("_")) {
+            value = value.substring(1);
+        }
+
+        if (value.endsWith("_")) {
+            value = value.substring(
+                    0,
+                    value.length() - 1
+            );
+        }
+
+        // ========================================================
+        // CATEGORY ALIASES
+        // ========================================================
+
+        if (value.equals("mechanic_shop")) {
+            value = "mechanic";
+        }
+
+        if (value.equals("shop_mechanic")) {
+            value = "mechanic";
+        }
+
+        if (value.equals("tutor")) {
+            value = "tutor_shop";
+        }
+
+        if (value.equals("shop_tutor")) {
+            value = "tutor_shop";
+        }
+
+        if (value.equals("home_tutoring")) {
+            value = "home_tutor";
+        }
+
+        if (value.equals("online_tutor")) {
+            value = "home_tutor";
+        }
+
+        if (value.equals("legal_consultation")) {
+            value = "consultation";
+        }
+
+        if (value.equals("consultant")) {
+            value = "consultation";
+        }
+
+        if (value.equals("freelancing")) {
+            value = "freelancer";
+        }
+
+        if (value.equals("freelance")) {
+            value = "freelancer";
+        }
+
+        return value;
+    }
+
+    // ============================================================
+    // EMPTY MESSAGE
+    // ============================================================
+
+    private void showEmptyMessage() {
+
+        TextView emptyText =
+                new TextView(this);
+
+        emptyText.setText(
+                "No workers found for this category"
+        );
+
+        emptyText.setTextSize(15);
+
+        emptyText.setTextColor(
+                getResources().getColor(
+                        R.color.muted
+                )
+        );
+
+        emptyText.setGravity(
+                Gravity.CENTER
+        );
+
+        emptyText.setPadding(
+                0,
+                dp(40),
+                0,
+                dp(40)
+        );
+
+        workersContainer.addView(
+                emptyText
+        );
+    }
+
+    // ============================================================
+    // WORKER CARD
+    // ============================================================
+
+    private LinearLayout createWorkerCard(
+            WorkerData worker
+    ) {
+
+        LinearLayout card =
+                new LinearLayout(this);
+
+        card.setOrientation(
+                LinearLayout.VERTICAL
+        );
+
+        card.setBackgroundResource(
+                R.drawable.bg_card
+        );
+
+        card.setPadding(
+                dp(16),
+                dp(16),
+                dp(16),
+                dp(16)
+        );
+
+        LinearLayout.LayoutParams cardParams =
+                new LinearLayout.LayoutParams(
+                        LinearLayout.LayoutParams.MATCH_PARENT,
+                        LinearLayout.LayoutParams.WRAP_CONTENT
+                );
+
+        cardParams.bottomMargin =
+                dp(14);
+
+        card.setLayoutParams(
+                cardParams
+        );
+
+        // ========================================================
+        // TOP ROW
+        // ========================================================
+
+        LinearLayout topRow =
+                new LinearLayout(this);
+
+        topRow.setOrientation(
+                LinearLayout.HORIZONTAL
+        );
+
+        topRow.setGravity(
+                Gravity.CENTER_VERTICAL
+        );
+
+        // ========================================================
+        // NAME
+        // ========================================================
+
+        TextView name =
+                new TextView(this);
+
+        name.setText(
+                worker.name
+        );
+
+        name.setTextSize(20);
+
+        name.setTextColor(
+                getResources().getColor(
+                        R.color.text_main
+                )
+        );
+
+        name.setTypeface(
+                null,
+                android.graphics.Typeface.BOLD
+        );
+
+        LinearLayout.LayoutParams nameParams =
+                new LinearLayout.LayoutParams(
+                        0,
+                        LinearLayout.LayoutParams.WRAP_CONTENT,
+                        1f
+                );
+
+        name.setLayoutParams(
+                nameParams
+        );
+
+        topRow.addView(name);
+
+        // ========================================================
+        // AVAILABILITY
+        // ========================================================
+
+        TextView availability =
+                new TextView(this);
+
+        if (worker.isAvailable) {
+
+            availability.setText(
+                    "🟢 Available"
+            );
+
+            availability.setTextColor(
+                    getResources().getColor(
+                            R.color.green
+                    )
+            );
+
+        } else {
+
+            availability.setText(
+                    "🔴 Busy"
+            );
+
+            availability.setTextColor(
+                    getResources().getColor(
+                            R.color.red
+                    )
+            );
+        }
+
+        availability.setTextSize(14);
+
+        availability.setTypeface(
+                null,
+                android.graphics.Typeface.BOLD
+        );
+
+        topRow.addView(
+                availability
+        );
+
+        card.addView(
+                topRow
+        );
+
+        // ========================================================
+        // TITLE
+        // ========================================================
+
+        TextView title =
+                new TextView(this);
+
+        title.setText(
+                worker.title
+        );
+
+        title.setTextSize(16);
+
+        title.setTextColor(
+                getResources().getColor(
+                        R.color.primary
+                )
+        );
+
+        LinearLayout.LayoutParams titleParams =
+                new LinearLayout.LayoutParams(
+                        LinearLayout.LayoutParams.MATCH_PARENT,
+                        LinearLayout.LayoutParams.WRAP_CONTENT
+                );
+
+        titleParams.topMargin =
+                dp(4);
+
+        title.setLayoutParams(
+                titleParams
+        );
+
+        card.addView(
+                title
+        );
+
+        // ========================================================
+        // INFO
+        // ========================================================
+
+        TextView info =
+                new TextView(this);
+
+        String experienceText;
+
+        if (worker.experience == null ||
+                worker.experience.trim().isEmpty()) {
+
+            experienceText =
+                    "Experience not specified";
+
+        } else {
+
+            experienceText =
+                    worker.experience;
+        }
+
+        info.setText(
+                "📍 " +
+                        worker.area +
+                        "  •  " +
+                        experienceText +
+                        "  •  ⭐ " +
+                        worker.rating +
+                        " (" +
+                        worker.reviews +
+                        ")"
+        );
+
+        info.setTextSize(14);
+
+        info.setTextColor(
+                getResources().getColor(
+                        R.color.muted
+                )
+        );
+
+        LinearLayout.LayoutParams infoParams =
+                new LinearLayout.LayoutParams(
+                        LinearLayout.LayoutParams.MATCH_PARENT,
+                        LinearLayout.LayoutParams.WRAP_CONTENT
+                );
+
+        infoParams.topMargin =
+                dp(10);
+
+        info.setLayoutParams(
+                infoParams
+        );
+
+        card.addView(info);
+
+        // ========================================================
+        // RATE
+        // ========================================================
+
+        TextView rate =
+                new TextView(this);
+
+        if (worker.rate == null ||
+                worker.rate.trim().isEmpty()) {
+
+            rate.setText(
+                    "Rate not specified"
+            );
+
+        } else {
+
+            rate.setText(
+                    "Rs. " +
+                            worker.rate
+            );
+        }
+
+        rate.setTextSize(16);
+
+        rate.setTextColor(
+                getResources().getColor(
+                        R.color.green
+                )
+        );
+
+        rate.setTypeface(
+                null,
+                android.graphics.Typeface.BOLD
+        );
+
+        LinearLayout.LayoutParams rateParams =
+                new LinearLayout.LayoutParams(
+                        LinearLayout.LayoutParams.MATCH_PARENT,
+                        LinearLayout.LayoutParams.WRAP_CONTENT
+                );
+
+        rateParams.topMargin =
+                dp(10);
+
+        rate.setLayoutParams(
+                rateParams
+        );
+
         card.addView(rate);
 
-        // Buttons row: View Profile + Send Request
-        LinearLayout btnRow = new LinearLayout(this);
-        btnRow.setOrientation(LinearLayout.HORIZONTAL);
-        LinearLayout.LayoutParams btnRowParams = new LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-        btnRow.setLayoutParams(btnRowParams);
+        // ========================================================
+        // BUTTON ROW
+        // ========================================================
 
-        TextView btnViewProfile = new TextView(this);
-        btnViewProfile.setText("👁 View Profile");
-        btnViewProfile.setTextColor(getResources().getColor(R.color.primary));
-        btnViewProfile.setTextSize(13);
-        btnViewProfile.setTypeface(null, android.graphics.Typeface.BOLD);
-        btnViewProfile.setBackgroundResource(R.drawable.bg_btn_outline);
-        btnViewProfile.setGravity(android.view.Gravity.CENTER);
-        btnViewProfile.setPadding(dp(12), dp(10), dp(12), dp(10));
-        LinearLayout.LayoutParams viewProfileParams = new LinearLayout.LayoutParams(
-                0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f);
-        viewProfileParams.setMargins(0, 0, dp(8), 0);
-        btnViewProfile.setLayoutParams(viewProfileParams);
-        btnViewProfile.setOnClickListener(v -> {
-            Intent intent = new Intent(WorkersListActivity.this, WorkerProfileViewActivity.class);
-            intent.putExtra(WorkerProfileViewActivity.EXTRA_WORKER_NAME, worker.name);
-            intent.putExtra(WorkerProfileViewActivity.EXTRA_WORKER_TITLE, worker.title);
-            intent.putExtra(WorkerProfileViewActivity.EXTRA_WORKER_RATING, worker.rating);
-            intent.putExtra(WorkerProfileViewActivity.EXTRA_WORKER_EXP, worker.experience);
-            intent.putExtra(WorkerProfileViewActivity.EXTRA_WORKER_RATE, worker.rate);
-            intent.putExtra(WorkerProfileViewActivity.EXTRA_WORKER_BIO, worker.title + " with " + worker.experience + " of experience.");
-            intent.putExtra(WorkerProfileViewActivity.EXTRA_WORKER_AREA, worker.area);
-            startActivity(intent);
-        });
-        btnRow.addView(btnViewProfile);
+        LinearLayout buttonRow =
+                new LinearLayout(this);
 
-        // Send Request button
-        TextView btnSendRequest = new TextView(this);
-        btnSendRequest.setText("📅 Send Request");
-        btnSendRequest.setTextSize(13);
-        btnSendRequest.setTypeface(null, android.graphics.Typeface.BOLD);
-        btnSendRequest.setGravity(android.view.Gravity.CENTER);
-        btnSendRequest.setPadding(dp(12), dp(10), dp(12), dp(10));
-        LinearLayout.LayoutParams sendReqParams = new LinearLayout.LayoutParams(
-                0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f);
-        btnSendRequest.setLayoutParams(sendReqParams);
+        buttonRow.setOrientation(
+                LinearLayout.HORIZONTAL
+        );
+
+        buttonRow.setGravity(
+                Gravity.CENTER_VERTICAL
+        );
+
+        LinearLayout.LayoutParams buttonRowParams =
+                new LinearLayout.LayoutParams(
+                        LinearLayout.LayoutParams.MATCH_PARENT,
+                        LinearLayout.LayoutParams.WRAP_CONTENT
+                );
+
+        buttonRowParams.topMargin =
+                dp(14);
+
+        buttonRow.setLayoutParams(
+                buttonRowParams
+        );
+        // ========================================================
+        // VIEW PROFILE BUTTON
+        // ========================================================
+
+        TextView viewProfile =
+                new TextView(this);
+
+        viewProfile.setText(
+                "👁 View Profile"
+        );
+
+        viewProfile.setTextSize(15);
+
+        viewProfile.setTextColor(
+                getResources().getColor(
+                        R.color.primary
+                )
+        );
+
+        viewProfile.setGravity(
+                Gravity.CENTER
+        );
+
+        viewProfile.setTypeface(
+                null,
+                android.graphics.Typeface.BOLD
+        );
+
+        // ORIGINAL OUTLINE STYLE
+        viewProfile.setBackgroundResource(
+                R.drawable.bg_btn_outline
+        );
+
+        LinearLayout.LayoutParams profileParams =
+                new LinearLayout.LayoutParams(
+                        0,
+                        dp(54),
+                        1f
+                );
+
+        profileParams.setMarginEnd(
+                dp(8)
+        );
+
+        viewProfile.setLayoutParams(
+                profileParams
+        );
+
+        buttonRow.addView(
+                viewProfile
+        );
+
+        // ========================================================
+        // SEND REQUEST BUTTON
+        // ========================================================
+
+        TextView sendRequest =
+                new TextView(this);
+
+        sendRequest.setText(
+                "📅 Send Request"
+        );
+
+        sendRequest.setTextSize(15);
+
+        sendRequest.setGravity(
+                Gravity.CENTER
+        );
+
+        sendRequest.setTypeface(
+                null,
+                android.graphics.Typeface.BOLD
+        );
+
+        // ========================================================
+        // ORIGINAL SEND REQUEST COLORS
+        // ========================================================
 
         if (worker.isAvailable) {
-            btnSendRequest.setBackgroundResource(R.drawable.bg_btn_primary);
-            btnSendRequest.setTextColor(getResources().getColor(R.color.white));
-            btnSendRequest.setOnClickListener(v ->
-                    Toast.makeText(this, "Request sent to " + worker.name, Toast.LENGTH_SHORT).show());
+
+            sendRequest.setTextColor(
+                    getResources().getColor(
+                            R.color.white
+                    )
+            );
+
+            sendRequest.setBackgroundResource(
+                    R.drawable.bg_btn_primary
+            );
+
         } else {
-            btnSendRequest.setBackgroundResource(R.drawable.bg_btn_outline);
-            btnSendRequest.setTextColor(getResources().getColor(R.color.muted));
-            btnSendRequest.setOnClickListener(v ->
-                    Toast.makeText(this, worker.name + " is currently busy", Toast.LENGTH_SHORT).show());
+
+            sendRequest.setTextColor(
+                    getResources().getColor(
+                            R.color.muted
+                    )
+            );
+
+            sendRequest.setBackgroundResource(
+                    R.drawable.bg_btn_outline
+            );
         }
-        btnRow.addView(btnSendRequest);
 
-        card.addView(btnRow);
+        LinearLayout.LayoutParams requestParams =
+                new LinearLayout.LayoutParams(
+                        0,
+                        dp(54),
+                        1f
+                );
 
+        sendRequest.setLayoutParams(
+                requestParams
+        );
+
+        buttonRow.addView(
+                sendRequest
+        );
+
+        card.addView(
+                buttonRow
+        );
+
+        // ========================================================
+        // VIEW PROFILE CLICK
+        // ========================================================
+
+        viewProfile.setOnClickListener(v -> {
+
+                    Intent intent = new Intent(
+                            WorkersListActivity.this,
+                            WorkerProfileViewActivity.class
+                    );
+
+                    intent.putExtra(
+                            WorkerProfileViewActivity.EXTRA_WORKER_NAME,
+                            worker.name
+                    );
+
+                    intent.putExtra(
+                            WorkerProfileViewActivity.EXTRA_WORKER_TITLE,
+                            worker.title
+                    );
+
+                    intent.putExtra(
+                            WorkerProfileViewActivity.EXTRA_WORKER_AREA,
+                            worker.area
+                    );
+
+                    intent.putExtra(
+                            WorkerProfileViewActivity.EXTRA_WORKER_EXP,
+                            worker.experience
+                    );
+
+                    intent.putExtra(
+                            WorkerProfileViewActivity.EXTRA_WORKER_RATE,
+                            worker.rate
+                    );
+
+                    intent.putExtra(
+                            WorkerProfileViewActivity.EXTRA_WORKER_RATING,
+                            worker.rating
+                    );
+
+                    intent.putExtra(
+                            WorkerProfileViewActivity.EXTRA_WORKER_BIO,
+                            worker.title
+                    );
+
+                    startActivity(intent);
+                }
+        );
+
+        // ========================================================
+        // SEND REQUEST CLICK
+        // ========================================================
+
+        sendRequest.setOnClickListener(
+                v -> {
+
+                    if (!worker.isAvailable) {
+
+                        Toast.makeText(
+                                this,
+                                "This worker is currently busy",
+                                Toast.LENGTH_SHORT
+                        ).show();
+
+                        return;
+                    }
+
+                    Intent intent =
+                            new Intent(
+                                    WorkersListActivity.this,
+                                    BookingActivity.class
+                            );
+
+                    intent.putExtra(
+                            BookingActivity.EXTRA_WORKER_NAME,
+                            worker.name
+                    );
+
+                    intent.putExtra(
+                            BookingActivity.EXTRA_WORKER_TITLE,
+                            worker.title
+                    );
+
+                    intent.putExtra(
+                            BookingActivity.EXTRA_WORKER_RATE,
+                            worker.rate
+                    );
+
+                    startActivity(intent);
+                }
+        );
         return card;
     }
 
+    // ============================================================
+    // DP HELPER
+    // ============================================================
+
     private int dp(int value) {
-        float density = getResources().getDisplayMetrics().density;
-        return (int) (value * density);
+
+        float density =
+                getResources()
+                        .getDisplayMetrics()
+                        .density;
+
+        return (int)
+                (value * density);
     }
 }

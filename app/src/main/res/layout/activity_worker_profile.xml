@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -78,7 +79,7 @@
                     android:id="@+id/tvWorkerProfileSpecialization"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Electrician"
+                    android:text=""
                     android:textColor="@color/primary"
                     android:textSize="13sp"
                     android:layout_marginBottom="16dp"/>
@@ -99,7 +100,7 @@
                             android:id="@+id/tvWorkerProfileJobs"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="32"
+                            android:text="0"
                             android:textColor="@color/primary"
                             android:textStyle="bold"
                             android:textSize="16sp"/>
@@ -124,7 +125,7 @@
                             android:id="@+id/tvWorkerProfileRating"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="4.8 ⭐"
+                            android:text="0.0 ⭐"
                             android:textColor="@color/amber"
                             android:textStyle="bold"
                             android:textSize="16sp"/>
@@ -151,6 +152,7 @@
                 android:padding="20dp"
                 android:layout_marginBottom="20dp">
 
+                <!-- Full Name -->
                 <TextView
                     style="@style/InputLabel"
                     android:layout_width="wrap_content"
@@ -163,9 +165,26 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     style="@style/InputField"
-                    android:text="Usman Tariq"
+                    android:hint="Your full name"
                     android:layout_marginBottom="16dp"/>
 
+                <!-- Service Category -->
+                <TextView
+                    style="@style/InputLabel"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Service Category"
+                    android:layout_marginBottom="6dp"/>
+
+                <EditText
+                    android:id="@+id/etWorkerCategory"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    style="@style/InputField"
+                    android:hint="Enter your service category"
+                    android:layout_marginBottom="16dp"/>
+
+                <!-- Specialization -->
                 <TextView
                     style="@style/InputLabel"
                     android:layout_width="wrap_content"
@@ -178,9 +197,10 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     style="@style/InputField"
-                    android:text="Certified Electrician"
+                    android:hint="e.g. Certified Electrician"
                     android:layout_marginBottom="16dp"/>
 
+                <!-- Phone -->
                 <TextView
                     style="@style/InputLabel"
                     android:layout_width="wrap_content"
@@ -193,10 +213,11 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     style="@style/InputField"
-                    android:text="0300-1234567"
+                    android:hint="03XX-XXXXXXX"
                     android:inputType="phone"
                     android:layout_marginBottom="16dp"/>
 
+                <!-- Area -->
                 <TextView
                     style="@style/InputLabel"
                     android:layout_width="wrap_content"
@@ -209,9 +230,26 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     style="@style/InputField"
-                    android:text="Tench Bhatta, Rawalpindi"
+                    android:hint="Tench Bhatta, Rawalpindi"
                     android:layout_marginBottom="16dp"/>
 
+                <!-- Experience -->
+                <TextView
+                    style="@style/InputLabel"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Experience"
+                    android:layout_marginBottom="6dp"/>
+
+                <EditText
+                    android:id="@+id/etWorkerExperience"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    style="@style/InputField"
+                    android:hint="e.g. 5 years"
+                    android:layout_marginBottom="16dp"/>
+
+                <!-- Service Rate -->
                 <TextView
                     style="@style/InputLabel"
                     android:layout_width="wrap_content"
@@ -224,7 +262,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     style="@style/InputField"
-                    android:text="Rs. 800/visit"/>
+                    android:hint="Rs. 800/visit"/>
 
             </LinearLayout>
 

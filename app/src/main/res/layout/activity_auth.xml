@@ -306,6 +306,81 @@
                     android:inputType="text"
                     android:hint="e.g. Tench Bhatta, Rawalpindi"
                     android:layout_marginBottom="16dp"/>
+                <TextView
+                    android:id="@+id/workerCategoryLabel"
+                    style="@style/InputLabel"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Category"
+                    android:visibility="gone"
+                    android:layout_marginBottom="6dp"/>
+
+                <EditText
+                    android:id="@+id/etWorkerCategory"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    style="@style/InputField"
+                    android:hint="e.g. Electrician"
+                    android:inputType="text"
+                    android:visibility="gone"
+                    android:layout_marginBottom="16dp"/>
+
+                <TextView
+                    android:id="@+id/workerAreaLabel"
+                    style="@style/InputLabel"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Worker Area"
+                    android:visibility="gone"
+                    android:layout_marginBottom="6dp"/>
+
+                <EditText
+                    android:id="@+id/etWorkerArea"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    style="@style/InputField"
+                    android:hint="e.g. Tench Bhatta"
+                    android:inputType="text"
+                    android:visibility="gone"
+                    android:layout_marginBottom="16dp"/>
+
+                <TextView
+                    android:id="@+id/workerExperienceLabel"
+                    style="@style/InputLabel"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Experience"
+                    android:visibility="gone"
+                    android:layout_marginBottom="6dp"/>
+
+                <EditText
+                    android:id="@+id/etWorkerExperience"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    style="@style/InputField"
+                    android:hint="e.g. 3 years"
+                    android:inputType="text"
+                    android:visibility="gone"
+                    android:layout_marginBottom="16dp"/>
+
+                <TextView
+                    android:id="@+id/workerRateLabel"
+                    style="@style/InputLabel"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Rate"
+                    android:visibility="gone"
+                    android:layout_marginBottom="6dp"/>
+
+                <EditText
+                    android:id="@+id/etWorkerRate"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    style="@style/InputField"
+                    android:hint="e.g. 1500"
+                    android:inputType="number"
+                    android:visibility="gone"
+                    android:layout_marginBottom="20dp"/>
 
                 <TextView
                     style="@style/InputLabel"
