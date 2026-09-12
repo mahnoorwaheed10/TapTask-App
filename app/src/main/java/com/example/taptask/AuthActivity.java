@@ -54,11 +54,13 @@ public class AuthActivity extends AppCompatActivity {
 
     // Worker fields
     private EditText etWorkerCategory;
+    private EditText etWorkerProfession;
     private EditText etWorkerArea;
     private EditText etWorkerExperience;
     private EditText etWorkerRate;
 
     private TextView workerCategoryLabel;
+    private TextView workerProfessionLabel;
     private TextView workerAreaLabel;
     private TextView workerExperienceLabel;
     private TextView workerRateLabel;
@@ -82,6 +84,12 @@ public class AuthActivity extends AppCompatActivity {
 
     private String signInRole = "customer";
     private String signUpRole = "customer";
+
+    // ============================================================
+    // ADMIN
+    // ============================================================
+
+    private static final String ADMIN_EMAIL = "admin@test.com";
 
     // ============================================================
     // ON CREATE
@@ -130,69 +138,38 @@ public class AuthActivity extends AppCompatActivity {
 
         tvForgotPassword = findViewById(R.id.tvForgotPassword);
 
-        signInRoleCustomer =
-                findViewById(R.id.signInRoleCustomer);
-
-        signInRoleWorker =
-                findViewById(R.id.signInRoleWorker);
+        signInRoleCustomer = findViewById(R.id.signInRoleCustomer);
+        signInRoleWorker = findViewById(R.id.signInRoleWorker);
 
         btnSignIn = findViewById(R.id.btnSignIn);
 
-        linkGoToSignUp =
-                findViewById(R.id.linkGoToSignUp);
+        linkGoToSignUp = findViewById(R.id.linkGoToSignUp);
 
         // Sign Up
-        etSignUpName =
-                findViewById(R.id.etSignUpName);
-
-        etSignUpEmail =
-                findViewById(R.id.etSignUpEmail);
-
-        etSignUpPhone =
-                findViewById(R.id.etSignUpPhone);
-
-        etSignUpCity =
-                findViewById(R.id.etSignUpCity);
-
-        etSignUpPassword =
-                findViewById(R.id.etSignUpPassword);
+        etSignUpName = findViewById(R.id.etSignUpName);
+        etSignUpEmail = findViewById(R.id.etSignUpEmail);
+        etSignUpPhone = findViewById(R.id.etSignUpPhone);
+        etSignUpCity = findViewById(R.id.etSignUpCity);
+        etSignUpPassword = findViewById(R.id.etSignUpPassword);
 
         // Worker fields
-        etWorkerCategory =
-                findViewById(R.id.etWorkerCategory);
+        etWorkerCategory = findViewById(R.id.etWorkerCategory);
+        etWorkerProfession = findViewById(R.id.etWorkerProfession);
+        etWorkerArea = findViewById(R.id.etWorkerArea);
+        etWorkerExperience = findViewById(R.id.etWorkerExperience);
+        etWorkerRate = findViewById(R.id.etWorkerRate);
 
-        etWorkerArea =
-                findViewById(R.id.etWorkerArea);
+        workerCategoryLabel = findViewById(R.id.workerCategoryLabel);
+        workerProfessionLabel = findViewById(R.id.workerProfessionLabel);
+        workerAreaLabel = findViewById(R.id.workerAreaLabel);
+        workerExperienceLabel = findViewById(R.id.workerExperienceLabel);
+        workerRateLabel = findViewById(R.id.workerRateLabel);
 
-        etWorkerExperience =
-                findViewById(R.id.etWorkerExperience);
+        roleCustomer = findViewById(R.id.roleCustomer);
+        roleWorker = findViewById(R.id.roleWorker);
 
-        etWorkerRate =
-                findViewById(R.id.etWorkerRate);
-
-        workerCategoryLabel =
-                findViewById(R.id.workerCategoryLabel);
-
-        workerAreaLabel =
-                findViewById(R.id.workerAreaLabel);
-
-        workerExperienceLabel =
-                findViewById(R.id.workerExperienceLabel);
-
-        workerRateLabel =
-                findViewById(R.id.workerRateLabel);
-
-        roleCustomer =
-                findViewById(R.id.roleCustomer);
-
-        roleWorker =
-                findViewById(R.id.roleWorker);
-
-        btnSignUp =
-                findViewById(R.id.btnSignUp);
-
-        linkGoToSignIn =
-                findViewById(R.id.linkGoToSignIn);
+        btnSignUp = findViewById(R.id.btnSignUp);
+        linkGoToSignIn = findViewById(R.id.linkGoToSignIn);
     }
 
     // ============================================================
@@ -201,21 +178,13 @@ public class AuthActivity extends AppCompatActivity {
 
     private void setupTabs() {
 
-        tabSignIn.setOnClickListener(
-                v -> showSignIn()
-        );
+        tabSignIn.setOnClickListener(v -> showSignIn());
 
-        tabSignUp.setOnClickListener(
-                v -> showSignUp()
-        );
+        tabSignUp.setOnClickListener(v -> showSignUp());
 
-        linkGoToSignUp.setOnClickListener(
-                v -> showSignUp()
-        );
+        linkGoToSignUp.setOnClickListener(v -> showSignUp());
 
-        linkGoToSignIn.setOnClickListener(
-                v -> showSignIn()
-        );
+        linkGoToSignIn.setOnClickListener(v -> showSignIn());
     }
 
     // ============================================================
@@ -229,28 +198,17 @@ public class AuthActivity extends AppCompatActivity {
 
         tvAuthTitle.setText("Welcome Back");
 
-        tvAuthSubtitle.setText(
-                "Sign in to continue to TapTask"
-        );
+        tvAuthSubtitle.setText("Sign in to continue to TapTask");
 
-        tabSignIn.setBackgroundResource(
-                R.drawable.bg_tab_active
-        );
-
-        tabSignUp.setBackgroundResource(
-                R.drawable.bg_role_btn_inactive
-        );
+        tabSignIn.setBackgroundResource(R.drawable.bg_tab_active);
+        tabSignUp.setBackgroundResource(R.drawable.bg_role_btn_inactive);
 
         tabSignIn.setTextColor(
-                getResources().getColor(
-                        R.color.primary
-                )
+                getResources().getColor(R.color.primary)
         );
 
         tabSignUp.setTextColor(
-                getResources().getColor(
-                        R.color.muted
-                )
+                getResources().getColor(R.color.muted)
         );
     }
 
@@ -265,28 +223,17 @@ public class AuthActivity extends AppCompatActivity {
 
         tvAuthTitle.setText("Create Account");
 
-        tvAuthSubtitle.setText(
-                "Join TapTask today"
-        );
+        tvAuthSubtitle.setText("Join TapTask today");
 
-        tabSignUp.setBackgroundResource(
-                R.drawable.bg_tab_active
-        );
-
-        tabSignIn.setBackgroundResource(
-                R.drawable.bg_role_btn_inactive
-        );
+        tabSignUp.setBackgroundResource(R.drawable.bg_tab_active);
+        tabSignIn.setBackgroundResource(R.drawable.bg_role_btn_inactive);
 
         tabSignUp.setTextColor(
-                getResources().getColor(
-                        R.color.primary
-                )
+                getResources().getColor(R.color.primary)
         );
 
         tabSignIn.setTextColor(
-                getResources().getColor(
-                        R.color.muted
-                )
+                getResources().getColor(R.color.muted)
         );
     }
 
@@ -348,82 +295,58 @@ public class AuthActivity extends AppCompatActivity {
     private void signInUser() {
 
         String email =
-                etSignInEmail.getText()
-                        .toString()
-                        .trim();
+                etSignInEmail.getText().toString().trim();
 
         String password =
-                etSignInPassword.getText()
-                        .toString()
-                        .trim();
+                etSignInPassword.getText().toString().trim();
 
         if (TextUtils.isEmpty(email)) {
 
-            etSignInEmail.setError(
-                    "Enter your email"
-            );
-
+            etSignInEmail.setError("Enter your email");
             etSignInEmail.requestFocus();
-
             return;
         }
 
         if (TextUtils.isEmpty(password)) {
 
-            etSignInPassword.setError(
-                    "Enter your password"
-            );
-
+            etSignInPassword.setError("Enter your password");
             etSignInPassword.requestFocus();
-
             return;
         }
 
         btnSignIn.setEnabled(false);
+        btnSignIn.setText("Signing in...");
 
-        btnSignIn.setText(
-                "Signing in..."
-        );
+        auth.signInWithEmailAndPassword(email, password)
+                .addOnSuccessListener(authResult -> {
 
-        auth.signInWithEmailAndPassword(
-                        email,
-                        password
-                )
-                .addOnSuccessListener(
-                        authResult -> {
+                    FirebaseUser user = auth.getCurrentUser();
 
-                            FirebaseUser user =
-                                    auth.getCurrentUser();
+                    if (user == null) {
 
-                            if (user == null) {
+                        resetSignInButton();
 
-                                resetSignInButton();
+                        Toast.makeText(
+                                AuthActivity.this,
+                                "Login failed",
+                                Toast.LENGTH_SHORT
+                        ).show();
 
-                                Toast.makeText(
-                                        AuthActivity.this,
-                                        "Login failed",
-                                        Toast.LENGTH_SHORT
-                                ).show();
+                        return;
+                    }
 
-                                return;
-                            }
+                    loadUserRoleAndOpenHome(user);
+                })
+                .addOnFailureListener(e -> {
 
-                            loadUserRoleAndOpenHome(user);
-                        }
-                )
-                .addOnFailureListener(
-                        e -> {
+                    resetSignInButton();
 
-                            resetSignInButton();
-
-                            Toast.makeText(
-                                    AuthActivity.this,
-                                    "Login failed: "
-                                            + e.getMessage(),
-                                    Toast.LENGTH_LONG
-                            ).show();
-                        }
-                );
+                    Toast.makeText(
+                            AuthActivity.this,
+                            "Login failed: " + e.getMessage(),
+                            Toast.LENGTH_LONG
+                    ).show();
+                });
     }
 
     // ============================================================
@@ -433,72 +356,88 @@ public class AuthActivity extends AppCompatActivity {
     private void resetSignInButton() {
 
         btnSignIn.setEnabled(true);
-
-        btnSignIn.setText(
-                R.string.sign_in_btn
-        );
+        btnSignIn.setText(R.string.sign_in_btn);
     }
 
     // ============================================================
     // LOAD USER ROLE
     // ============================================================
 
-    private void loadUserRoleAndOpenHome(
-            FirebaseUser user
-    ) {
+    private void loadUserRoleAndOpenHome(FirebaseUser user) {
 
-        String uid =
-                user.getUid();
+        String uid = user.getUid();
+
+        String email = user.getEmail();
+
+        // ========================================================
+        // ADMIN LOGIN
+        // ========================================================
+
+        if (email != null &&
+                ADMIN_EMAIL.equalsIgnoreCase(email.trim())) {
+
+            openCorrectDashboard("admin");
+            return;
+        }
+
+        // ========================================================
+        // CUSTOMER / WORKER LOGIN
+        // ========================================================
 
         db.collection("users")
                 .document(uid)
                 .get()
-                .addOnSuccessListener(
-                        documentSnapshot -> {
+                .addOnSuccessListener(documentSnapshot -> {
 
-                            String savedRole =
-                                    documentSnapshot.getString(
-                                            "role"
-                                    );
+                    String savedRole =
+                            documentSnapshot.getString("role");
 
-                            if (savedRole == null ||
-                                    savedRole.trim().isEmpty()) {
+                    if (savedRole == null ||
+                            savedRole.trim().isEmpty()) {
 
-                                savedRole =
-                                        signInRole;
-                            }
+                        savedRole = signInRole;
+                    }
 
-                            openCorrectDashboard(
-                                    savedRole
-                            );
-                        }
-                )
-                .addOnFailureListener(
-                        e -> {
-
-                            openCorrectDashboard(
-                                    signInRole
-                            );
-                        }
+                    openCorrectDashboard(savedRole);
+                })
+                .addOnFailureListener(e ->
+                        openCorrectDashboard(signInRole)
                 );
     }
 
     // ============================================================
-    // OPEN CUSTOMER / WORKER DASHBOARD
+    // OPEN DASHBOARD
     // ============================================================
 
-    private void openCorrectDashboard(
-            String role
-    ) {
+    private void openCorrectDashboard(String role) {
 
         Intent intent;
 
-        if ("worker".equalsIgnoreCase(role)) {
+        // ========================================================
+        // ADMIN
+        // ========================================================
+
+        if ("admin".equalsIgnoreCase(role)) {
+
+            intent = new Intent(
+                    AuthActivity.this,
+                    AdminDashboardActivity.class
+            );
+
+            // ========================================================
+            // WORKER
+            // ========================================================
+
+        } else if ("worker".equalsIgnoreCase(role)) {
 
             intent = new Intent(
                     AuthActivity.this,
                     WorkerDashboardActivity.class
             );
+
+            // ========================================================
+            // CUSTOMER
+            // ========================================================
 
         } else {
 
@@ -514,7 +453,6 @@ public class AuthActivity extends AppCompatActivity {
         );
 
         startActivity(intent);
-
         finish();
     }
 
@@ -562,6 +500,9 @@ public class AuthActivity extends AppCompatActivity {
             workerCategoryLabel.setVisibility(View.VISIBLE);
             etWorkerCategory.setVisibility(View.VISIBLE);
 
+            workerProfessionLabel.setVisibility(View.VISIBLE);
+            etWorkerProfession.setVisibility(View.VISIBLE);
+
             workerAreaLabel.setVisibility(View.VISIBLE);
             etWorkerArea.setVisibility(View.VISIBLE);
 
@@ -582,6 +523,9 @@ public class AuthActivity extends AppCompatActivity {
             workerCategoryLabel.setVisibility(View.GONE);
             etWorkerCategory.setVisibility(View.GONE);
 
+            workerProfessionLabel.setVisibility(View.GONE);
+            etWorkerProfession.setVisibility(View.GONE);
+
             workerAreaLabel.setVisibility(View.GONE);
             etWorkerArea.setVisibility(View.GONE);
 
@@ -599,58 +543,36 @@ public class AuthActivity extends AppCompatActivity {
 
     private void signUpUser() {
 
-        // --------------------------------------------------------
-        // CUSTOMER / COMMON INFORMATION
-        // --------------------------------------------------------
-
         String name =
-                etSignUpName.getText()
-                        .toString()
-                        .trim();
+                etSignUpName.getText().toString().trim();
 
         String email =
-                etSignUpEmail.getText()
-                        .toString()
-                        .trim();
+                etSignUpEmail.getText().toString().trim();
 
         String phone =
-                etSignUpPhone.getText()
-                        .toString()
-                        .trim();
+                etSignUpPhone.getText().toString().trim();
 
         String city =
-                etSignUpCity.getText()
-                        .toString()
-                        .trim();
+                etSignUpCity.getText().toString().trim();
 
         String password =
-                etSignUpPassword.getText()
-                        .toString()
-                        .trim();
+                etSignUpPassword.getText().toString().trim();
 
-        // --------------------------------------------------------
-        // WORKER INFORMATION
-        // --------------------------------------------------------
-
+        // Worker information
         String workerCategory =
-                etWorkerCategory.getText()
-                        .toString()
-                        .trim();
+                etWorkerCategory.getText().toString().trim();
+
+        String workerProfession =
+                etWorkerProfession.getText().toString().trim();
 
         String workerArea =
-                etWorkerArea.getText()
-                        .toString()
-                        .trim();
+                etWorkerArea.getText().toString().trim();
 
         String workerExperience =
-                etWorkerExperience.getText()
-                        .toString()
-                        .trim();
+                etWorkerExperience.getText().toString().trim();
 
         String workerRate =
-                etWorkerRate.getText()
-                        .toString()
-                        .trim();
+                etWorkerRate.getText().toString().trim();
 
         // ========================================================
         // BASIC VALIDATION
@@ -658,45 +580,29 @@ public class AuthActivity extends AppCompatActivity {
 
         if (TextUtils.isEmpty(name)) {
 
-            etSignUpName.setError(
-                    "Enter your name"
-            );
-
+            etSignUpName.setError("Enter your name");
             etSignUpName.requestFocus();
-
             return;
         }
 
         if (TextUtils.isEmpty(email)) {
 
-            etSignUpEmail.setError(
-                    "Enter your email"
-            );
-
+            etSignUpEmail.setError("Enter your email");
             etSignUpEmail.requestFocus();
-
             return;
         }
 
         if (TextUtils.isEmpty(phone)) {
 
-            etSignUpPhone.setError(
-                    "Enter your phone number"
-            );
-
+            etSignUpPhone.setError("Enter your phone number");
             etSignUpPhone.requestFocus();
-
             return;
         }
 
         if (TextUtils.isEmpty(city)) {
 
-            etSignUpCity.setError(
-                    "Enter your city / area"
-            );
-
+            etSignUpCity.setError("Enter your city / area");
             etSignUpCity.requestFocus();
-
             return;
         }
 
@@ -713,7 +619,6 @@ public class AuthActivity extends AppCompatActivity {
                 );
 
                 etWorkerCategory.requestFocus();
-
                 return;
             }
 
@@ -724,7 +629,16 @@ public class AuthActivity extends AppCompatActivity {
                 );
 
                 etWorkerCategory.requestFocus();
+                return;
+            }
 
+            if (TextUtils.isEmpty(workerProfession)) {
+
+                etWorkerProfession.setError(
+                        "Enter your profession / subject"
+                );
+
+                etWorkerProfession.requestFocus();
                 return;
             }
 
@@ -735,7 +649,6 @@ public class AuthActivity extends AppCompatActivity {
                 );
 
                 etWorkerArea.requestFocus();
-
                 return;
             }
 
@@ -746,7 +659,6 @@ public class AuthActivity extends AppCompatActivity {
                 );
 
                 etWorkerArea.requestFocus();
-
                 return;
             }
 
@@ -757,7 +669,6 @@ public class AuthActivity extends AppCompatActivity {
                 );
 
                 etWorkerExperience.requestFocus();
-
                 return;
             }
 
@@ -768,7 +679,6 @@ public class AuthActivity extends AppCompatActivity {
                 );
 
                 etWorkerRate.requestFocus();
-
                 return;
             }
         }
@@ -780,7 +690,6 @@ public class AuthActivity extends AppCompatActivity {
             );
 
             etSignUpPassword.requestFocus();
-
             return;
         }
 
@@ -791,15 +700,11 @@ public class AuthActivity extends AppCompatActivity {
             );
 
             etSignUpPassword.requestFocus();
-
             return;
         }
 
         btnSignUp.setEnabled(false);
-
-        btnSignUp.setText(
-                "Creating account..."
-        );
+        btnSignUp.setText("Creating account...");
 
         // ========================================================
         // CREATE FIREBASE ACCOUNT
@@ -809,51 +714,47 @@ public class AuthActivity extends AppCompatActivity {
                         email,
                         password
                 )
-                .addOnSuccessListener(
-                        authResult -> {
+                .addOnSuccessListener(authResult -> {
 
-                            FirebaseUser user =
-                                    auth.getCurrentUser();
+                    FirebaseUser user =
+                            auth.getCurrentUser();
 
-                            if (user == null) {
+                    if (user == null) {
 
-                                resetSignUpButton();
+                        resetSignUpButton();
 
-                                Toast.makeText(
-                                        AuthActivity.this,
-                                        "Account creation failed",
-                                        Toast.LENGTH_SHORT
-                                ).show();
+                        Toast.makeText(
+                                AuthActivity.this,
+                                "Account creation failed",
+                                Toast.LENGTH_SHORT
+                        ).show();
 
-                                return;
-                            }
+                        return;
+                    }
 
-                            saveUserProfile(
-                                    user,
-                                    name,
-                                    email,
-                                    phone,
-                                    city,
-                                    workerCategory,
-                                    workerArea,
-                                    workerExperience,
-                                    workerRate
-                            );
-                        }
-                )
-                .addOnFailureListener(
-                        e -> {
+                    saveUserProfile(
+                            user,
+                            name,
+                            email,
+                            phone,
+                            city,
+                            workerCategory,
+                            workerProfession,
+                            workerArea,
+                            workerExperience,
+                            workerRate
+                    );
+                })
+                .addOnFailureListener(e -> {
 
-                            resetSignUpButton();
+                    resetSignUpButton();
 
-                            Toast.makeText(
-                                    AuthActivity.this,
-                                    "Sign up failed: "
-                                            + e.getMessage(),
-                                    Toast.LENGTH_LONG
-                            ).show();
-                        }
-                );
+                    Toast.makeText(
+                            AuthActivity.this,
+                            "Sign up failed: " + e.getMessage(),
+                            Toast.LENGTH_LONG
+                    ).show();
+                });
     }
 
     // ============================================================
@@ -867,115 +768,78 @@ public class AuthActivity extends AppCompatActivity {
             String phone,
             String city,
             String workerCategory,
+            String workerProfession,
             String workerArea,
             String workerExperience,
             String workerRate
     ) {
 
-        String uid =
-                user.getUid();
+        String uid = user.getUid();
 
         Map<String, Object> userData =
                 new HashMap<>();
 
-        userData.put(
-                "uid",
-                uid
-        );
-
-        userData.put(
-                "name",
-                name
-        );
-
-        userData.put(
-                "email",
-                email
-        );
-
-        userData.put(
-                "phone",
-                phone
-        );
-
-        userData.put(
-                "city",
-                city
-        );
-
-        userData.put(
-                "role",
-                signUpRole
-        );
-
-        userData.put(
-                "createdAt",
-                FieldValue.serverTimestamp()
-        );
+        userData.put("uid", uid);
+        userData.put("name", name);
+        userData.put("email", email);
+        userData.put("phone", phone);
+        userData.put("city", city);
+        userData.put("role", signUpRole);
+        userData.put("createdAt", FieldValue.serverTimestamp());
 
         db.collection("users")
                 .document(uid)
                 .set(userData)
-                .addOnSuccessListener(
-                        unused -> {
+                .addOnSuccessListener(unused -> {
 
-                            if (!"worker".equals(signUpRole)) {
+                    if (!"worker".equals(signUpRole)) {
 
-                                Toast.makeText(
-                                        AuthActivity.this,
-                                        "Account created successfully!",
-                                        Toast.LENGTH_SHORT
-                                ).show();
+                        Toast.makeText(
+                                AuthActivity.this,
+                                "Account created successfully!",
+                                Toast.LENGTH_SHORT
+                        ).show();
 
-                                openCorrectDashboard(
-                                        signUpRole
-                                );
+                        openCorrectDashboard(signUpRole);
+                        return;
+                    }
 
-                                return;
-                            }
+                    saveWorkerProfile(
+                            uid,
+                            name,
+                            workerCategory,
+                            workerProfession,
+                            workerArea,
+                            workerExperience,
+                            workerRate,
+                            phone
+                    );
+                })
+                .addOnFailureListener(e -> {
 
-                            saveWorkerProfile(
-                                    uid,
-                                    name,
-                                    workerCategory,
-                                    workerArea,
-                                    workerExperience,
-                                    workerRate,
-                                    phone
-                            );
-                        }
-                )
-                .addOnFailureListener(
-                        e -> {
+                    resetSignUpButton();
 
-                            resetSignUpButton();
-
-                            Toast.makeText(
-                                    AuthActivity.this,
-                                    "Account created, but profile "
-                                            + "could not be saved: "
-                                            + e.getMessage(),
-                                    Toast.LENGTH_LONG
-                            ).show();
-                        }
-                );
+                    Toast.makeText(
+                            AuthActivity.this,
+                            "Account created, but profile could not be saved: "
+                                    + e.getMessage(),
+                            Toast.LENGTH_LONG
+                    ).show();
+                });
     }
 
     // ============================================================
     // NORMALIZE WORKER CATEGORY
     // ============================================================
 
-    private String normalizeWorkerCategory(
-            String category
-    ) {
+    private String normalizeWorkerCategory(String category) {
 
         if (category == null) {
             return "";
         }
 
         String value =
-                category.trim()
-                        .toLowerCase();
+                category.trim().toLowerCase();
 
         // HOME
         if (value.equals("electrician") ||
@@ -1042,26 +906,21 @@ public class AuthActivity extends AppCompatActivity {
             return "freelancer";
         }
 
-        // If user already entered canonical value
-        return value
-                .replace(" ", "_");
+        return value.replace(" ", "_");
     }
 
     // ============================================================
     // NORMALIZE WORKER AREA
     // ============================================================
 
-    private String normalizeWorkerArea(
-            String area
-    ) {
+    private String normalizeWorkerArea(String area) {
 
         if (area == null) {
             return "";
         }
 
         String value =
-                area.trim()
-                        .toLowerCase();
+                area.trim().toLowerCase();
 
         if (value.equals("tench") ||
                 value.equals("tench bhatta") ||
@@ -1092,15 +951,12 @@ public class AuthActivity extends AppCompatActivity {
             String uid,
             String name,
             String category,
+            String profession,
             String area,
             String experience,
             String rate,
             String phone
     ) {
-
-        // ========================================================
-        // FINAL CLEAN VALUES
-        // ========================================================
 
         String finalCategory =
                 normalizeWorkerCategory(category);
@@ -1109,24 +965,19 @@ public class AuthActivity extends AppCompatActivity {
                 normalizeWorkerArea(area);
 
         String finalName =
-                name == null
-                        ? ""
-                        : name.trim();
+                name == null ? "" : name.trim();
+
+        String finalProfession =
+                profession == null ? "" : profession.trim();
 
         String finalExperience =
-                experience == null
-                        ? ""
-                        : experience.trim();
+                experience == null ? "" : experience.trim();
 
         String finalRate =
-                rate == null
-                        ? ""
-                        : rate.trim();
+                rate == null ? "" : rate.trim();
 
         String finalPhone =
-                phone == null
-                        ? ""
-                        : phone.trim();
+                phone == null ? "" : phone.trim();
 
         // ========================================================
         // WORKER DATA
@@ -1135,64 +986,38 @@ public class AuthActivity extends AppCompatActivity {
         Map<String, Object> workerData =
                 new HashMap<>();
 
-        workerData.put(
-                "uid",
-                uid
-        );
+        workerData.put("uid", uid);
 
-        workerData.put(
-                "name",
-                finalName
-        );
+        workerData.put("name", finalName);
 
-        // IMPORTANT:
-        // category is the same value used by customer
-        // Home / Shop / Online filtering.
-        workerData.put(
-                "category",
-                finalCategory
-        );
+        // Category remains the filtering category
+        workerData.put("category", finalCategory);
 
-        // Title is intentionally the SAME category.
+        // Profession / subject
+        workerData.put("profession", finalProfession);
+
+        // Title shows profession / subject
         workerData.put(
                 "title",
-                finalCategory
+                finalProfession.isEmpty()
+                        ? finalCategory
+                        : finalProfession
         );
 
-        workerData.put(
-                "area",
-                finalArea
-        );
+        workerData.put("area", finalArea);
 
-        workerData.put(
-                "experience",
-                finalExperience
-        );
+        workerData.put("experience", finalExperience);
 
-        workerData.put(
-                "rate",
-                finalRate
-        );
+        workerData.put("rate", finalRate);
 
-        workerData.put(
-                "phone",
-                finalPhone
-        );
+        workerData.put("phone", finalPhone);
 
-        workerData.put(
-                "rating",
-                0.0
-        );
+        workerData.put("rating", 0.0);
 
-        workerData.put(
-                "reviews",
-                0
-        );
+        workerData.put("reviews", 0);
 
-        workerData.put(
-                "isAvailable",
-                true
-        );
+        workerData.put("isAvailable", true);
+        workerData.put("verificationStatus", "pending");
 
         workerData.put(
                 "createdAt",
@@ -1206,34 +1031,27 @@ public class AuthActivity extends AppCompatActivity {
         db.collection("workers")
                 .document(uid)
                 .set(workerData)
-                .addOnSuccessListener(
-                        unused -> {
+                .addOnSuccessListener(unused -> {
 
-                            Toast.makeText(
-                                    AuthActivity.this,
-                                    "Worker account created successfully!",
-                                    Toast.LENGTH_SHORT
-                            ).show();
+                    Toast.makeText(
+                            AuthActivity.this,
+                            "Worker account created successfully!",
+                            Toast.LENGTH_SHORT
+                    ).show();
 
-                            openCorrectDashboard(
-                                    "worker"
-                            );
-                        }
-                )
-                .addOnFailureListener(
-                        e -> {
+                    openCorrectDashboard("worker");
+                })
+                .addOnFailureListener(e -> {
 
-                            resetSignUpButton();
+                    resetSignUpButton();
 
-                            Toast.makeText(
-                                    AuthActivity.this,
-                                    "Account created, but worker "
-                                            + "profile could not be saved: "
-                                            + e.getMessage(),
-                                    Toast.LENGTH_LONG
-                            ).show();
-                        }
-                );
+                    Toast.makeText(
+                            AuthActivity.this,
+                            "Account created, but worker profile could not be saved: "
+                                    + e.getMessage(),
+                            Toast.LENGTH_LONG
+                    ).show();
+                });
     }
 
     // ============================================================
@@ -1274,7 +1092,6 @@ public class AuthActivity extends AppCompatActivity {
             );
 
             etSignInEmail.requestFocus();
-
             return;
         }
 
@@ -1305,14 +1122,11 @@ public class AuthActivity extends AppCompatActivity {
     private void setupGoogleButton() {
 
         btnGoogleSignIn.setOnClickListener(
-                v -> {
-
-                    Toast.makeText(
-                            AuthActivity.this,
-                            "Google sign-in setup is not connected yet.",
-                            Toast.LENGTH_SHORT
-                    ).show();
-                }
+                v -> Toast.makeText(
+                        AuthActivity.this,
+                        "Google sign-in setup is not connected yet.",
+                        Toast.LENGTH_SHORT
+                ).show()
         );
     }
 }

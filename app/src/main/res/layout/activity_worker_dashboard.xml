@@ -1,231 +1,364 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="@color/bg">
+    android:background="#F4F7FF">
 
-    <!-- Top bar -->
+    <!-- ====================================================== -->
+    <!-- DASHBOARD TAB                                          -->
+    <!-- ====================================================== -->
+
     <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="center_vertical"
-        android:background="@drawable/bg_gradient_dark"
-        android:paddingHorizontal="20dp"
-        android:paddingVertical="16dp">
-
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:orientation="vertical">
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/welcome_worker"
-                android:textColor="@color/white"
-                android:textSize="18sp"
-                android:textStyle="bold"/>
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/manage_bookings"
-                android:textColor="#C7D2FE"
-                android:textSize="11sp"/>
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center_vertical"
-            android:background="@drawable/bg_chip_light"
-            android:paddingHorizontal="12dp"
-            android:paddingVertical="8dp">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/status_label"
-                android:textColor="@color/text_main"
-                android:textSize="12sp"
-                android:layout_marginEnd="6dp"/>
-
-            <TextView
-                android:id="@+id/btnOnlineToggle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="🟢 Online"
-                android:textColor="@color/green"
-                android:textStyle="bold"
-                android:textSize="12sp"/>
-
-        </LinearLayout>
-
-    </LinearLayout>
-
-    <!-- Content area — switches based on bottom nav -->
-    <FrameLayout
-        android:id="@+id/workerContentArea"
+        android:id="@+id/dashboardContent"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1">
+        android:layout_weight="1"
+        android:orientation="vertical">
 
-        <!-- Dashboard Tab Content -->
         <ScrollView
-            android:id="@+id/tabDashboard"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:visibility="visible">
+            android:fillViewport="true"
+            android:overScrollMode="never">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
 
-                <!-- Stats grid -->
+                <!-- ================= HEADER ================= -->
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="210dp"
+                    android:orientation="vertical"
+                    android:paddingStart="22dp"
+                    android:paddingEnd="22dp"
+                    android:paddingTop="24dp"
+                    android:paddingBottom="18dp"
+                    android:background="@drawable/bg_gradient_dark">
+
+                    <TextView
+                        android:id="@+id/welcome_worker"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Welcome back,"
+                        android:textColor="#DDE6FF"
+                        android:textSize="15sp" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="100dp"
+                        android:layout_marginTop="10dp"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:layout_width="72dp"
+                            android:layout_height="72dp"
+                            android:gravity="center"
+                            android:text="👤"
+                            android:textSize="34sp"
+                            android:background="@drawable/circle_avatar_bg" />
+
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:layout_marginStart="15dp"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:id="@+id/workerNameHeader"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Worker"
+                                android:textColor="@color/white"
+                                android:textSize="25sp"
+                                android:textStyle="bold" />
+
+                            <TextView
+                                android:id="@+id/workerSpecializationHeader"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="7dp"
+                                android:text="Professional Service Provider"
+                                android:textColor="@color/white"
+                                android:textSize="12sp"
+                                android:paddingStart="11dp"
+                                android:paddingEnd="11dp"
+                                android:paddingTop="6dp"
+                                android:paddingBottom="6dp"
+                                android:background="@drawable/bg_chip_light" />
+
+                        </LinearLayout>
+
+                    </LinearLayout>
+
+                    <Button
+                        android:id="@+id/btnOnlineToggle"
+                        android:layout_width="wrap_content"
+                        android:layout_height="38dp"
+                        android:layout_gravity="end"
+                        android:layout_marginTop="-4dp"
+                        android:minWidth="0dp"
+                        android:minHeight="0dp"
+                        android:paddingStart="14dp"
+                        android:paddingEnd="14dp"
+                        android:text="🟢 Online"
+                        android:textAllCaps="false"
+                        android:textColor="@color/white"
+                        android:textSize="12sp"
+                        android:textStyle="bold"
+                        android:background="@drawable/bg_chip_light" />
+
+                </LinearLayout>
+
+                <!-- ================= STATISTICS ================= -->
+
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
-                    android:padding="16dp">
+                    android:padding="14dp"
+                    android:background="@color/white">
 
                     <LinearLayout
                         android:layout_width="0dp"
-                        android:layout_height="wrap_content"
+                        android:layout_height="138dp"
                         android:layout_weight="1"
+                        android:layout_marginEnd="5dp"
                         android:orientation="vertical"
-                        android:gravity="center"
-                        android:background="@drawable/bg_card"
-                        android:padding="14dp"
-                        android:layout_marginEnd="8dp">
+                        android:padding="12dp"
+                        android:background="#ECFAF5">
+
+                        <TextView
+                            android:layout_width="42dp"
+                            android:layout_height="42dp"
+                            android:gravity="center"
+                            android:text="💰"
+                            android:textSize="21sp"
+                            android:background="#CFF4E4" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="7dp"
+                            android:text="Total Earned"
+                            android:textColor="#24324A"
+                            android:textSize="10sp"
+                            android:textStyle="bold" />
 
                         <TextView
                             android:id="@+id/tvTotalEarned"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Rs. 24,500"
-                            android:textColor="@color/green"
-                            android:textStyle="bold"
-                            android:textSize="16sp"/>
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="@string/total_earned"
-                            android:textColor="@color/muted"
-                            android:textSize="10sp"/>
+                            android:text="Rs. 0"
+                            android:textColor="#08A66A"
+                            android:textSize="16sp"
+                            android:textStyle="bold" />
 
                     </LinearLayout>
 
                     <LinearLayout
                         android:layout_width="0dp"
-                        android:layout_height="wrap_content"
+                        android:layout_height="138dp"
                         android:layout_weight="1"
+                        android:layout_marginStart="3dp"
+                        android:layout_marginEnd="3dp"
                         android:orientation="vertical"
-                        android:gravity="center"
-                        android:background="@drawable/bg_card"
-                        android:padding="14dp"
-                        android:layout_marginEnd="8dp">
+                        android:padding="12dp"
+                        android:background="#EEF6FF">
+
+                        <TextView
+                            android:layout_width="42dp"
+                            android:layout_height="42dp"
+                            android:gravity="center"
+                            android:text="📋"
+                            android:textSize="21sp"
+                            android:background="#D8E9FF" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="7dp"
+                            android:text="Jobs Completed"
+                            android:textColor="#24324A"
+                            android:textSize="10sp"
+                            android:textStyle="bold" />
 
                         <TextView
                             android:id="@+id/tvJobsCompleted"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="32"
-                            android:textColor="@color/primary"
-                            android:textStyle="bold"
-                            android:textSize="16sp"/>
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="@string/jobs_completed"
-                            android:textColor="@color/muted"
-                            android:textSize="10sp"/>
+                            android:text="0"
+                            android:textColor="#4054E8"
+                            android:textSize="22sp"
+                            android:textStyle="bold" />
 
                     </LinearLayout>
 
                     <LinearLayout
                         android:layout_width="0dp"
-                        android:layout_height="wrap_content"
+                        android:layout_height="138dp"
                         android:layout_weight="1"
+                        android:layout_marginStart="5dp"
                         android:orientation="vertical"
-                        android:gravity="center"
-                        android:background="@drawable/bg_card"
-                        android:padding="14dp">
+                        android:padding="12dp"
+                        android:background="#FFF9E9">
+
+                        <TextView
+                            android:layout_width="42dp"
+                            android:layout_height="42dp"
+                            android:gravity="center"
+                            android:text="⭐"
+                            android:textSize="21sp"
+                            android:background="#FFF0BD" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="7dp"
+                            android:text="Avg Rating"
+                            android:textColor="#24324A"
+                            android:textSize="10sp"
+                            android:textStyle="bold" />
 
                         <TextView
                             android:id="@+id/tvAvgRating"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="4.8 ⭐"
-                            android:textColor="@color/amber"
-                            android:textStyle="bold"
-                            android:textSize="16sp"/>
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="@string/avg_rating"
-                            android:textColor="@color/muted"
-                            android:textSize="10sp"/>
+                            android:text="0.0 ⭐"
+                            android:textColor="#D48A00"
+                            android:textSize="19sp"
+                            android:textStyle="bold" />
 
                     </LinearLayout>
 
                 </LinearLayout>
 
-                <!-- Incoming Requests -->
+                <!-- ================= DASHBOARD CONTENT ================= -->
+
                 <LinearLayout
+                    android:id="@+id/dashboardInnerContent"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    android:paddingHorizontal="20dp"
-                    android:paddingBottom="16dp">
+                    android:paddingStart="15dp"
+                    android:paddingEnd="15dp"
+                    android:paddingBottom="25dp">
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/incoming_requests"
-                        android:textColor="@color/text_main"
-                        android:textStyle="bold"
-                        android:textSize="16sp"
-                        android:layout_marginBottom="12dp"/>
+                    <!-- INCOMING REQUESTS -->
 
                     <LinearLayout
-                        android:id="@+id/incomingRequestsContainer"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:orientation="vertical"/>
+                        android:orientation="vertical"
+                        android:padding="16dp"
+                        android:layout_marginBottom="15dp"
+                        android:background="@drawable/bg_card">
 
-                </LinearLayout>
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="48dp"
+                            android:gravity="center_vertical">
 
-                <!-- Active Jobs -->
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:paddingHorizontal="20dp"
-                    android:paddingBottom="32dp">
+                            <TextView
+                                android:layout_width="44dp"
+                                android:layout_height="44dp"
+                                android:gravity="center"
+                                android:text="🔔"
+                                android:textSize="21sp"
+                                android:background="#E7E4FF" />
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/active_jobs"
-                        android:textColor="@color/text_main"
-                        android:textStyle="bold"
-                        android:textSize="16sp"
-                        android:layout_marginBottom="12dp"/>
+                            <TextView
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:layout_marginStart="12dp"
+                                android:text="Incoming Requests"
+                                android:textColor="#14213D"
+                                android:textSize="18sp"
+                                android:textStyle="bold" />
+
+                        </LinearLayout>
+
+                        <TextView
+                            android:id="@+id/manage_bookings"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="end"
+                            android:layout_marginTop="-31dp"
+                            android:text="View All  →"
+                            android:textColor="#4438E8"
+                            android:textSize="12sp"
+                            android:textStyle="bold" />
+
+                        <LinearLayout
+                            android:id="@+id/incomingRequestsContainer"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="15dp"
+                            android:orientation="vertical"
+                            android:padding="7dp"
+                            android:background="#F5F7FD" />
+
+                    </LinearLayout>
+
+                    <!-- ACTIVE JOBS -->
 
                     <LinearLayout
-                        android:id="@+id/activeJobsContainer"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:orientation="vertical"/>
+                        android:orientation="vertical"
+                        android:padding="16dp"
+                        android:background="@drawable/bg_card">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="48dp"
+                            android:gravity="center_vertical">
+
+                            <TextView
+                                android:layout_width="44dp"
+                                android:layout_height="44dp"
+                                android:gravity="center"
+                                android:text="🔨"
+                                android:textSize="21sp"
+                                android:background="#DDF8EF" />
+
+                            <TextView
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:layout_marginStart="12dp"
+                                android:text="Active Jobs"
+                                android:textColor="#14213D"
+                                android:textSize="18sp"
+                                android:textStyle="bold" />
+
+                        </LinearLayout>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="end"
+                            android:layout_marginTop="-31dp"
+                            android:text="View All  →"
+                            android:textColor="#4438E8"
+                            android:textSize="12sp"
+                            android:textStyle="bold" />
+
+                        <LinearLayout
+                            android:id="@+id/activeJobsContainer"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="15dp"
+                            android:orientation="vertical" />
+
+                    </LinearLayout>
 
                 </LinearLayout>
 
@@ -233,278 +366,492 @@
 
         </ScrollView>
 
-        <!-- Chat Tab Content -->
+    </LinearLayout>
+
+    <!-- ====================================================== -->
+    <!-- CHAT TAB                                                -->
+    <!-- ====================================================== -->
+
+    <LinearLayout
+        android:id="@+id/chatContent"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:orientation="vertical"
+        android:visibility="gone"
+        android:background="#F4F7FF">
+
+        <!-- ================= CHAT HEADER ================= -->
+
         <LinearLayout
-            android:id="@+id/tabChat"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="135dp"
             android:orientation="vertical"
-            android:gravity="center"
-            android:padding="32dp"
-            android:visibility="gone">
+            android:paddingStart="22dp"
+            android:paddingEnd="22dp"
+            android:paddingTop="22dp"
+            android:paddingBottom="18dp"
+            android:background="@drawable/bg_gradient_dark">
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="💬"
-                android:textSize="48sp"
-                android:gravity="center"
-                android:layout_marginBottom="16dp"/>
+                android:text="Messages"
+                android:textColor="@color/white"
+                android:textSize="25sp"
+                android:textStyle="bold" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Your active job chats appear here"
-                android:textColor="@color/muted"
-                android:textSize="14sp"
-                android:gravity="center"/>
-
-            <LinearLayout
-                android:id="@+id/workerChatListContainer"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:layout_marginTop="20dp"/>
+                android:layout_marginTop="5dp"
+                android:text="Chat with your customers"
+                android:textColor="#DDE6FF"
+                android:textSize="13sp" />
 
         </LinearLayout>
 
-        <!-- Profile Tab Content -->
+        <!-- ================= CHAT LIST ================= -->
+
         <ScrollView
-            android:id="@+id/tabProfile"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:visibility="gone">
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:fillViewport="true"
+            android:overScrollMode="never">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:padding="20dp">
+                android:padding="15dp">
 
-                <!-- Avatar + stats -->
+                <!-- RECENT CHATS CARD -->
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:padding="17dp"
+                    android:gravity="center_vertical"
+                    android:background="@drawable/bg_card">
+
+                    <TextView
+                        android:layout_width="46dp"
+                        android:layout_height="46dp"
+                        android:gravity="center"
+                        android:text="💬"
+                        android:textSize="22sp"
+                        android:background="#E7E4FF" />
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:layout_marginStart="12dp"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Recent Chats"
+                            android:textColor="#14213D"
+                            android:textSize="19sp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="3dp"
+                            android:text="Your customer conversations"
+                            android:textColor="#7A879D"
+                            android:textSize="12sp" />
+
+                    </LinearLayout>
+
+                </LinearLayout>
+
+                <!-- ACTUAL CHAT LIST -->
+
+                <LinearLayout
+                    android:id="@+id/workerChatListContainer"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:orientation="vertical" />
+
+            </LinearLayout>
+
+        </ScrollView>
+
+    </LinearLayout>
+    <!-- ====================================================== -->
+    <!-- PROFILE TAB                                             -->
+    <!-- ====================================================== -->
+
+    <LinearLayout
+        android:id="@+id/profileContent"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:orientation="vertical"
+        android:visibility="gone"
+        android:background="#F4F7FF">
+
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:fillViewport="true">
+
+            <LinearLayout
+                android:id="@+id/profileInnerContent"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="15dp"
+                android:paddingBottom="25dp">
+
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
                     android:gravity="center"
-                    android:background="@drawable/bg_card"
-                    android:padding="24dp"
-                    android:layout_marginBottom="20dp">
+                    android:padding="23dp"
+                    android:background="@drawable/bg_card">
 
                     <TextView
-                        android:layout_width="72dp"
-                        android:layout_height="72dp"
-                        android:text="🔨"
-                        android:textSize="32sp"
+                        android:layout_width="80dp"
+                        android:layout_height="80dp"
                         android:gravity="center"
-                        android:background="@drawable/circle_avatar_bg"
-                        android:layout_marginBottom="14dp"/>
+                        android:text="👤"
+                        android:textSize="38sp"
+                        android:background="@drawable/circle_avatar_bg" />
 
                     <TextView
                         android:id="@+id/tvWorkerProfileName"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_marginTop="12dp"
                         android:text="Worker Name"
-                        android:textColor="@color/text_main"
-                        android:textStyle="bold"
-                        android:textSize="18sp"/>
+                        android:textColor="#14213D"
+                        android:textSize="21sp"
+                        android:textStyle="bold" />
 
                     <TextView
                         android:id="@+id/tvWorkerProfileSpecialization"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Electrician"
-                        android:textColor="@color/primary"
-                        android:textSize="13sp"
-                        android:layout_marginBottom="12dp"/>
+                        android:layout_marginTop="5dp"
+                        android:text="Professional Service Provider"
+                        android:textColor="#4438E8"
+                        android:textSize="13sp" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="18dp"
+                        android:orientation="horizontal">
+
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:gravity="center"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:id="@+id/tvWorkerProfileJobs"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="0"
+                                android:textColor="#4438E8"
+                                android:textSize="18sp"
+                                android:textStyle="bold" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Jobs Done"
+                                android:textColor="#7A879D"
+                                android:textSize="11sp" />
+
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:gravity="center"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:id="@+id/tvWorkerProfileRating"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="0.0"
+                                android:textColor="#D48A00"
+                                android:textSize="18sp"
+                                android:textStyle="bold" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Rating"
+                                android:textColor="#7A879D"
+                                android:textSize="11sp" />
+
+                        </LinearLayout>
+
+                    </LinearLayout>
 
                 </LinearLayout>
 
-                <!-- Editable fields -->
+                <!-- PROFILE INFORMATION -->
+
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_marginTop="14dp"
                     android:orientation="vertical"
-                    android:background="@drawable/bg_card"
-                    android:padding="20dp"
-                    android:layout_marginBottom="20dp">
+                    android:padding="18dp"
+                    android:background="@drawable/bg_card">
 
                     <TextView
-                        style="@style/InputLabel"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="@string/full_name"
-                        android:layout_marginBottom="6dp"/>
+                        android:text="Profile Information"
+                        android:textColor="#14213D"
+                        android:textSize="18sp"
+                        android:textStyle="bold"
+                        android:layout_marginBottom="15dp" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Full Name"
+                        android:textColor="#65738A"
+                        android:textSize="12sp" />
 
                     <EditText
                         android:id="@+id/etWorkerName"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        style="@style/InputField"
-                        android:text="Usman Tariq"
-                        android:layout_marginBottom="16dp"/>
+                        android:layout_height="48dp"
+                        android:layout_marginTop="5dp"
+                        android:hint="Worker name"
+                        android:paddingStart="14dp"
+                        android:paddingEnd="14dp"
+                        android:singleLine="true"
+                        android:background="@drawable/bg_card"
+                        android:backgroundTint="#F3F6FC" />
 
                     <TextView
-                        style="@style/InputLabel"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Specialization"
-                        android:layout_marginBottom="6dp"/>
+                        android:layout_marginTop="13dp"
+                        android:text="Profession / Specialization"
+                        android:textColor="#65738A"
+                        android:textSize="12sp" />
 
                     <EditText
                         android:id="@+id/etWorkerSpecialization"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        style="@style/InputField"
-                        android:text="Certified Electrician"
-                        android:layout_marginBottom="16dp"/>
+                        android:layout_height="48dp"
+                        android:layout_marginTop="5dp"
+                        android:hint="e.g. Certified Electrician"
+                        android:paddingStart="14dp"
+                        android:paddingEnd="14dp"
+                        android:singleLine="true"
+                        android:background="@drawable/bg_card"
+                        android:backgroundTint="#F3F6FC" />
 
                     <TextView
-                        style="@style/InputLabel"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="@string/phone_number"
-                        android:layout_marginBottom="6dp"/>
+                        android:layout_marginTop="13dp"
+                        android:text="Phone"
+                        android:textColor="#65738A"
+                        android:textSize="12sp" />
 
                     <EditText
                         android:id="@+id/etWorkerPhone"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        style="@style/InputField"
-                        android:text="0300-1234567"
+                        android:layout_height="48dp"
+                        android:layout_marginTop="5dp"
+                        android:hint="03XX-XXXXXXX"
                         android:inputType="phone"
-                        android:layout_marginBottom="16dp"/>
+                        android:paddingStart="14dp"
+                        android:paddingEnd="14dp"
+                        android:singleLine="true"
+                        android:background="@drawable/bg_card"
+                        android:backgroundTint="#F3F6FC" />
 
                     <TextView
-                        style="@style/InputLabel"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="@string/city_area"
-                        android:layout_marginBottom="6dp"/>
+                        android:layout_marginTop="13dp"
+                        android:text="Area"
+                        android:textColor="#65738A"
+                        android:textSize="12sp" />
 
                     <EditText
                         android:id="@+id/etWorkerArea"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        style="@style/InputField"
-                        android:text="Tench Bhatta, Rawalpindi"
-                        android:layout_marginBottom="16dp"/>
+                        android:layout_height="48dp"
+                        android:layout_marginTop="5dp"
+                        android:hint="Tench Bhatta, Rawalpindi"
+                        android:paddingStart="14dp"
+                        android:paddingEnd="14dp"
+                        android:singleLine="true"
+                        android:background="@drawable/bg_card"
+                        android:backgroundTint="#F3F6FC" />
 
                     <TextView
-                        style="@style/InputLabel"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_marginTop="13dp"
                         android:text="Service Rate"
-                        android:layout_marginBottom="6dp"/>
+                        android:textColor="#65738A"
+                        android:textSize="12sp" />
 
                     <EditText
                         android:id="@+id/etWorkerRate"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        style="@style/InputField"
-                        android:text="Rs. 800/visit"/>
+                        android:layout_height="48dp"
+                        android:layout_marginTop="5dp"
+                        android:hint="Rs. 800/visit"
+                        android:inputType="number"
+                        android:paddingStart="14dp"
+                        android:paddingEnd="14dp"
+                        android:singleLine="true"
+                        android:background="@drawable/bg_card"
+                        android:backgroundTint="#F3F6FC" />
 
                 </LinearLayout>
 
                 <Button
                     android:id="@+id/btnSaveWorkerProfile"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="54dp"
+                    android:layout_marginTop="15dp"
                     android:text="Save Changes"
-                    style="@style/PillButton"
-                    android:layout_marginBottom="16dp"/>
+                    android:textAllCaps="false"
+                    android:textColor="@color/white"
+                    android:textSize="15sp"
+                    android:textStyle="bold"
+                    android:background="@drawable/bg_btn_green" />
 
                 <Button
                     android:id="@+id/btnWorkerLogout"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="@string/logout"
-                    android:background="@drawable/bg_btn_red"
+                    android:layout_height="52dp"
+                    android:layout_marginTop="10dp"
+                    android:text="Logout"
+                    android:textAllCaps="false"
                     android:textColor="@color/white"
-                    android:textAllCaps="false"/>
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    android:background="@drawable/bg_btn_red" />
 
             </LinearLayout>
 
         </ScrollView>
 
-    </FrameLayout>
+    </LinearLayout>
 
-    <!-- Bottom Navigation Bar -->
+    <!-- ====================================================== -->
+    <!-- BOTTOM NAVIGATION                                      -->
+    <!-- ====================================================== -->
+
     <LinearLayout
-        android:id="@+id/bottomNav"
         android:layout_width="match_parent"
-        android:layout_height="60dp"
+        android:layout_height="72dp"
         android:orientation="horizontal"
+        android:gravity="center"
         android:background="@color/white"
-        android:elevation="8dp">
+        android:elevation="12dp">
+
+        <!-- DASHBOARD -->
 
         <LinearLayout
-            android:id="@+id/navDashboard"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
+            android:gravity="center"
             android:orientation="vertical"
-            android:gravity="center">
+            android:clickable="true"
+            android:focusable="true">
 
             <TextView
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="🏠"
-                android:textSize="20sp"/>
+                android:layout_height="24dp"
+                android:gravity="center"
+                android:text="⌂"
+                android:textColor="@color/primary"
+                android:textSize="24sp" />
 
             <TextView
+                android:id="@+id/navDashboard"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Dashboard"
-                android:textSize="10sp"
                 android:textColor="@color/primary"
-                android:textStyle="bold"/>
+                android:textSize="12sp"
+                android:textStyle="bold" />
 
         </LinearLayout>
 
+        <!-- CHAT -->
+
         <LinearLayout
-            android:id="@+id/navChat"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
+            android:gravity="center"
             android:orientation="vertical"
-            android:gravity="center">
+            android:clickable="true"
+            android:focusable="true">
 
             <TextView
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="24dp"
+                android:gravity="center"
                 android:text="💬"
-                android:textSize="20sp"/>
+                android:textSize="21sp" />
 
             <TextView
+                android:id="@+id/navChat"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Chat"
-                android:textSize="10sp"
-                android:textColor="@color/muted"/>
+                android:textColor="@color/muted"
+                android:textSize="12sp" />
 
         </LinearLayout>
 
+        <!-- PROFILE -->
+
         <LinearLayout
-            android:id="@+id/navProfile"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
+            android:gravity="center"
             android:orientation="vertical"
-            android:gravity="center">
+            android:clickable="true"
+            android:focusable="true">
 
             <TextView
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="24dp"
+                android:gravity="center"
                 android:text="👤"
-                android:textSize="20sp"/>
+                android:textSize="21sp" />
 
             <TextView
+                android:id="@+id/navProfile"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Profile"
-                android:textSize="10sp"
-                android:textColor="@color/muted"/>
+                android:textColor="@color/muted"
+                android:textSize="12sp" />
 
         </LinearLayout>
 

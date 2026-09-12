@@ -38,7 +38,9 @@
         <activity android:name=".AdminDashboardActivity" android:exported="false"/>
         <activity android:name=".ForgotPasswordActivity" />
         <activity android:name=".ChatbotActivity" />
-
+        <activity
+            android:name=".AdminManagementActivity"
+            android:exported="false" />
 
 
     </application>

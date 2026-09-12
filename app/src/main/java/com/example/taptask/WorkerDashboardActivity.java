@@ -2,11 +2,11 @@ package com.example.taptask;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.Gravity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
-import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -14,34 +14,77 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 
 public class WorkerDashboardActivity extends AppCompatActivity {
 
-    private TextView btnOnlineToggle;
+    // =========================================================
+    // HEADER
+    // =========================================================
+
+    private TextView workerNameHeader;
+    private TextView workerSpecializationHeader;
+    private Button btnOnlineToggle;
+
     private boolean isOnline = true;
+
+    // =========================================================
+    // CONTENT
+    // =========================================================
+
+    private LinearLayout dashboardContent;
+    private LinearLayout chatContent;
+    private LinearLayout profileContent;
 
     private LinearLayout incomingRequestsContainer;
     private LinearLayout activeJobsContainer;
     private LinearLayout workerChatListContainer;
 
-    private List<WorkerRequestItem> incomingRequests = new ArrayList<>();
-    private List<WorkerRequestItem> activeJobs = new ArrayList<>();
+    // =========================================================
+    // BOTTOM NAV
+    // =========================================================
 
-    private LinearLayout navDashboard, navChat, navProfile;
-    private ScrollView tabDashboard, tabProfile;
-    private LinearLayout tabChat;
+    private TextView navDashboard;
+    private TextView navChat;
+    private TextView navProfile;
 
-    private EditText etWorkerName, etWorkerSpecialization, etWorkerPhone,
-            etWorkerArea, etWorkerRate;
+    // =========================================================
+    // PROFILE
+    // =========================================================
 
-    private Button btnSaveWorkerProfile, btnWorkerLogout;
+    private TextView tvWorkerProfileName;
+    private TextView tvWorkerProfileSpecialization;
+    private TextView tvWorkerProfileJobs;
+    private TextView tvWorkerProfileRating;
+
+    private EditText etWorkerName;
+    private EditText etWorkerSpecialization;
+    private EditText etWorkerPhone;
+    private EditText etWorkerArea;
+    private EditText etWorkerRate;
+
+    private Button btnSaveWorkerProfile;
+    private Button btnWorkerLogout;
+
+    // =========================================================
+    // STATS
+    // =========================================================
+
+    private TextView tvTotalEarned;
+    private TextView tvJobsCompleted;
+    private TextView tvAvgRating;
+
+    // =========================================================
+    // FIREBASE
+    // =========================================================
 
     private FirebaseAuth auth;
     private FirebaseFirestore db;
@@ -49,9 +92,24 @@ public class WorkerDashboardActivity extends AppCompatActivity {
     private String currentWorkerName = "";
     private String currentWorkerDocumentId = "";
 
+    // =========================================================
+    // LISTS
+    // =========================================================
+
+    private final List<WorkerRequestItem> incomingRequests =
+            new ArrayList<>();
+
+    private final List<WorkerRequestItem> activeJobs =
+            new ArrayList<>();
+
+    // =========================================================
+    // ON CREATE
+    // =========================================================
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_worker_dashboard);
 
         auth = FirebaseAuth.getInstance();
@@ -65,15 +123,39 @@ public class WorkerDashboardActivity extends AppCompatActivity {
 
         loadCurrentWorkerThenBookings();
 
-        btnOnlineToggle.setOnClickListener(v -> toggleOnlineStatus());
+        // =====================================================
+        // ONLINE / BUSY
+        // =====================================================
+
+        btnOnlineToggle.setOnClickListener(v ->
+                toggleOnlineStatus()
+        );
+
+        // =====================================================
+        // SAVE PROFILE
+        // =====================================================
 
         btnSaveWorkerProfile.setOnClickListener(v -> {
 
-            String name = etWorkerName.getText().toString().trim();
-            String specialization = etWorkerSpecialization.getText().toString().trim();
-            String phone = etWorkerPhone.getText().toString().trim();
-            String area = etWorkerArea.getText().toString().trim();
-            String rate = etWorkerRate.getText().toString().trim();
+            String name = etWorkerName.getText()
+                    .toString()
+                    .trim();
+
+            String specialization = etWorkerSpecialization.getText()
+                    .toString()
+                    .trim();
+
+            String phone = etWorkerPhone.getText()
+                    .toString()
+                    .trim();
+
+            String area = etWorkerArea.getText()
+                    .toString()
+                    .trim();
+
+            String rate = etWorkerRate.getText()
+                    .toString()
+                    .trim();
 
             if (currentWorkerDocumentId.isEmpty()) {
                 Toast.makeText(
@@ -84,11 +166,21 @@ public class WorkerDashboardActivity extends AppCompatActivity {
                 return;
             }
 
+            if (name.isEmpty()) {
+                Toast.makeText(
+                        this,
+                        "Please enter your name",
+                        Toast.LENGTH_SHORT
+                ).show();
+                return;
+            }
+
             db.collection("workers")
                     .document(currentWorkerDocumentId)
                     .update(
                             "name", name,
                             "title", specialization,
+                            "profession", specialization,
                             "phone", phone,
                             "area", area,
                             "rate", rate
@@ -97,11 +189,29 @@ public class WorkerDashboardActivity extends AppCompatActivity {
 
                         currentWorkerName = name;
 
+                        workerNameHeader.setText(name);
+
+                        workerSpecializationHeader.setText(
+                                specialization.isEmpty()
+                                        ? "Professional Service Provider"
+                                        : specialization
+                        );
+
+                        tvWorkerProfileName.setText(name);
+
+                        tvWorkerProfileSpecialization.setText(
+                                specialization.isEmpty()
+                                        ? "Professional Service Provider"
+                                        : specialization
+                        );
+
                         Toast.makeText(
                                 this,
                                 "Profile updated successfully!",
                                 Toast.LENGTH_SHORT
                         ).show();
+
+                        loadPendingAndAcceptedBookings();
                     })
                     .addOnFailureListener(e ->
                             Toast.makeText(
@@ -111,6 +221,10 @@ public class WorkerDashboardActivity extends AppCompatActivity {
                             ).show()
                     );
         });
+
+        // =====================================================
+        // LOGOUT
+        // =====================================================
 
         btnWorkerLogout.setOnClickListener(v -> {
 
@@ -133,9 +247,29 @@ public class WorkerDashboardActivity extends AppCompatActivity {
         });
     }
 
+    // =========================================================
+    // BIND VIEWS
+    // =========================================================
+
     private void bindViews() {
 
-        btnOnlineToggle = findViewById(R.id.btnOnlineToggle);
+        workerNameHeader =
+                findViewById(R.id.workerNameHeader);
+
+        workerSpecializationHeader =
+                findViewById(R.id.workerSpecializationHeader);
+
+        btnOnlineToggle =
+                findViewById(R.id.btnOnlineToggle);
+
+        dashboardContent =
+                findViewById(R.id.dashboardContent);
+
+        chatContent =
+                findViewById(R.id.chatContent);
+
+        profileContent =
+                findViewById(R.id.profileContent);
 
         incomingRequestsContainer =
                 findViewById(R.id.incomingRequestsContainer);
@@ -146,15 +280,29 @@ public class WorkerDashboardActivity extends AppCompatActivity {
         workerChatListContainer =
                 findViewById(R.id.workerChatListContainer);
 
-        navDashboard = findViewById(R.id.navDashboard);
-        navChat = findViewById(R.id.navChat);
-        navProfile = findViewById(R.id.navProfile);
+        navDashboard =
+                findViewById(R.id.navDashboard);
 
-        tabDashboard = findViewById(R.id.tabDashboard);
-        tabChat = findViewById(R.id.tabChat);
-        tabProfile = findViewById(R.id.tabProfile);
+        navChat =
+                findViewById(R.id.navChat);
 
-        etWorkerName = findViewById(R.id.etWorkerName);
+        navProfile =
+                findViewById(R.id.navProfile);
+
+        tvWorkerProfileName =
+                findViewById(R.id.tvWorkerProfileName);
+
+        tvWorkerProfileSpecialization =
+                findViewById(R.id.tvWorkerProfileSpecialization);
+
+        tvWorkerProfileJobs =
+                findViewById(R.id.tvWorkerProfileJobs);
+
+        tvWorkerProfileRating =
+                findViewById(R.id.tvWorkerProfileRating);
+
+        etWorkerName =
+                findViewById(R.id.etWorkerName);
 
         etWorkerSpecialization =
                 findViewById(R.id.etWorkerSpecialization);
@@ -173,7 +321,20 @@ public class WorkerDashboardActivity extends AppCompatActivity {
 
         btnWorkerLogout =
                 findViewById(R.id.btnWorkerLogout);
+
+        tvTotalEarned =
+                findViewById(R.id.tvTotalEarned);
+
+        tvJobsCompleted =
+                findViewById(R.id.tvJobsCompleted);
+
+        tvAvgRating =
+                findViewById(R.id.tvAvgRating);
     }
+
+    // =========================================================
+    // BOTTOM NAVIGATION
+    // =========================================================
 
     private void setupBottomNav() {
 
@@ -182,9 +343,7 @@ public class WorkerDashboardActivity extends AppCompatActivity {
         );
 
         navChat.setOnClickListener(v -> {
-
             switchTab(1);
-
             loadWorkerChats();
         });
 
@@ -197,43 +356,29 @@ public class WorkerDashboardActivity extends AppCompatActivity {
 
     private void switchTab(int index) {
 
-        tabDashboard.setVisibility(
+        dashboardContent.setVisibility(
                 index == 0 ? View.VISIBLE : View.GONE
         );
 
-        tabChat.setVisibility(
+        chatContent.setVisibility(
                 index == 1 ? View.VISIBLE : View.GONE
         );
 
-        tabProfile.setVisibility(
+        profileContent.setVisibility(
                 index == 2 ? View.VISIBLE : View.GONE
         );
 
-        updateNavLabel(
-                navDashboard,
-                index == 0
-        );
-
-        updateNavLabel(
-                navChat,
-                index == 1
-        );
-
-        updateNavLabel(
-                navProfile,
-                index == 2
-        );
+        updateNavLabel(navDashboard, index == 0);
+        updateNavLabel(navChat, index == 1);
+        updateNavLabel(navProfile, index == 2);
     }
 
     private void updateNavLabel(
-            LinearLayout nav,
+            TextView nav,
             boolean active
     ) {
 
-        TextView label =
-                (TextView) nav.getChildAt(1);
-
-        label.setTextColor(
+        nav.setTextColor(
                 getResources().getColor(
                         active
                                 ? R.color.primary
@@ -241,7 +386,7 @@ public class WorkerDashboardActivity extends AppCompatActivity {
                 )
         );
 
-        label.setTypeface(
+        nav.setTypeface(
                 null,
                 active
                         ? android.graphics.Typeface.BOLD
@@ -249,22 +394,18 @@ public class WorkerDashboardActivity extends AppCompatActivity {
         );
     }
 
+    // =========================================================
+    // ONLINE / BUSY
+    // =========================================================
+
     private void toggleOnlineStatus() {
 
         isOnline = !isOnline;
 
         btnOnlineToggle.setText(
                 isOnline
-                        ? "🟢 Online"
-                        : "🔴 Busy"
-        );
-
-        btnOnlineToggle.setTextColor(
-                getResources().getColor(
-                        isOnline
-                                ? R.color.green
-                                : R.color.red
-                )
+                        ? "●  Online"
+                        : "●  Busy"
         );
 
         updateWorkerAvailability(
@@ -274,7 +415,7 @@ public class WorkerDashboardActivity extends AppCompatActivity {
     }
 
     // =========================================================
-    // UPDATED WORKER PROFILE LOADING
+    // LOAD CURRENT WORKER
     // =========================================================
 
     private void loadCurrentWorkerThenBookings() {
@@ -294,7 +435,10 @@ public class WorkerDashboardActivity extends AppCompatActivity {
 
         String uid = user.getUid();
 
-        // Worker document ID is the same as Firebase Auth UID
+        // -----------------------------------------------------
+        // 1. workers/{UID}
+        // -----------------------------------------------------
+
         db.collection("workers")
                 .document(uid)
                 .get()
@@ -305,80 +449,10 @@ public class WorkerDashboardActivity extends AppCompatActivity {
                         currentWorkerDocumentId =
                                 workerDocument.getId();
 
-                        String name =
-                                workerDocument.getString("name");
+                        loadWorkerData(workerDocument);
 
-                        String title =
-                                workerDocument.getString("title");
-
-                        String phone =
-                                workerDocument.getString("phone");
-
-                        String area =
-                                workerDocument.getString("area");
-
-                        String rate =
-                                workerDocument.getString("rate");
-
-                        currentWorkerName =
-                                name != null
-                                        ? name
-                                        : "";
-
-                        // NAME
-                        if (etWorkerName != null) {
-
-                            etWorkerName.setText(
-                                    name != null
-                                            ? name
-                                            : ""
-                            );
-                        }
-
-                        // SPECIALIZATION / TITLE
-                        if (etWorkerSpecialization != null) {
-
-                            etWorkerSpecialization.setText(
-                                    title != null
-                                            ? title
-                                            : ""
-                            );
-                        }
-
-                        // PHONE
-                        if (etWorkerPhone != null) {
-
-                            etWorkerPhone.setText(
-                                    phone != null
-                                            ? phone
-                                            : ""
-                            );
-                        }
-
-                        // AREA
-                        if (etWorkerArea != null) {
-
-                            etWorkerArea.setText(
-                                    area != null
-                                            ? area
-                                            : ""
-                            );
-                        }
-
-                        // RATE
-                        if (etWorkerRate != null) {
-
-                            etWorkerRate.setText(
-                                    rate != null
-                                            ? rate
-                                            : ""
-                            );
-                        }
-
-                        // Keep existing booking logic
                         loadPendingAndAcceptedBookings();
 
-                        // Keep existing availability logic
                         updateWorkerAvailability(
                                 true,
                                 null
@@ -387,43 +461,45 @@ public class WorkerDashboardActivity extends AppCompatActivity {
                         return;
                     }
 
-                    // Fallback: load worker name from users collection
-                    db.collection("users")
-                            .document(uid)
+                    // -------------------------------------------------
+                    // 2. authUid
+                    // -------------------------------------------------
+
+                    db.collection("workers")
+                            .whereEqualTo("authUid", uid)
+                            .limit(1)
                             .get()
-                            .addOnSuccessListener(userDocument -> {
+                            .addOnSuccessListener(snapshot -> {
 
-                                String name =
-                                        userDocument.getString("name");
+                                if (!snapshot.isEmpty()) {
 
-                                currentWorkerName =
-                                        name != null
-                                                ? name
-                                                : "";
+                                    DocumentSnapshot doc =
+                                            snapshot.getDocuments().get(0);
 
-                                if (etWorkerName != null) {
+                                    currentWorkerDocumentId =
+                                            doc.getId();
 
-                                    etWorkerName.setText(
-                                            currentWorkerName
+                                    loadWorkerData(doc);
+
+                                    loadPendingAndAcceptedBookings();
+
+                                    updateWorkerAvailability(
+                                            true,
+                                            null
                                     );
+
+                                    return;
                                 }
 
-                                loadPendingAndAcceptedBookings();
+                                // -------------------------------------
+                                // 3. users/{UID}
+                                // -------------------------------------
 
-                                updateWorkerAvailability(
-                                        true,
-                                        null
-                                );
+                                loadWorkerFromUsers(uid);
                             })
                             .addOnFailureListener(e ->
-                                    Toast.makeText(
-                                            this,
-                                            "Could not load worker profile: "
-                                                    + e.getMessage(),
-                                            Toast.LENGTH_LONG
-                                    ).show()
+                                    loadWorkerFromUsers(uid)
                             );
-
                 })
                 .addOnFailureListener(e ->
                         Toast.makeText(
@@ -435,7 +511,221 @@ public class WorkerDashboardActivity extends AppCompatActivity {
                 );
     }
 
+    // =========================================================
+    // LOAD WORKER DATA
+    // =========================================================
+
+    private void loadWorkerData(
+            DocumentSnapshot doc
+    ) {
+
+        currentWorkerDocumentId =
+                doc.getId();
+
+        String name = doc.getString("name");
+        String profession = doc.getString("profession");
+        String title = doc.getString("title");
+        String category = doc.getString("category");
+
+        String phone = doc.getString("phone");
+        String area = doc.getString("area");
+        String rate = doc.getString("rate");
+
+        String displayProfession = profession;
+
+        if (displayProfession == null ||
+                displayProfession.trim().isEmpty()) {
+
+            displayProfession = title;
+        }
+
+        if (displayProfession == null ||
+                displayProfession.trim().isEmpty()) {
+
+            displayProfession = category;
+        }
+
+        if (displayProfession == null ||
+                displayProfession.trim().isEmpty()) {
+
+            displayProfession =
+                    "Professional Service Provider";
+        }
+
+        if (name == null ||
+                name.trim().isEmpty()) {
+
+            name = "Worker";
+        }
+
+        currentWorkerName = name;
+
+        // =====================================================
+        // HEADER
+        // =====================================================
+
+        workerNameHeader.setText(name);
+
+        workerSpecializationHeader.setText(
+                displayProfession
+        );
+
+        // =====================================================
+        // PROFILE
+        // =====================================================
+
+        tvWorkerProfileName.setText(name);
+
+        tvWorkerProfileSpecialization.setText(
+                displayProfession
+        );
+
+        etWorkerName.setText(name);
+
+        etWorkerSpecialization.setText(
+                displayProfession
+        );
+
+        etWorkerPhone.setText(
+                phone != null ? phone : ""
+        );
+
+        etWorkerArea.setText(
+                area != null ? area : ""
+        );
+
+        etWorkerRate.setText(
+                rate != null ? rate : ""
+        );
+
+        // =====================================================
+        // AVAILABILITY
+        // =====================================================
+
+        Boolean available =
+                doc.getBoolean("isAvailable");
+
+        if (available != null) {
+
+            isOnline = available;
+
+            btnOnlineToggle.setText(
+                    available
+                            ? "●  Online"
+                            : "●  Busy"
+            );
+        }
+
+        // =====================================================
+        // RATING
+        // =====================================================
+
+        Double rating =
+                doc.getDouble("rating");
+
+        if (rating != null) {
+
+            tvWorkerProfileRating.setText(
+                    String.format(
+                            Locale.US,
+                            "%.1f ⭐",
+                            rating
+                    )
+            );
+
+            tvAvgRating.setText(
+                    String.format(
+                            Locale.US,
+                            "%.1f ⭐",
+                            rating
+                    )
+            );
+
+        } else {
+
+            tvWorkerProfileRating.setText("0.0 ⭐");
+            tvAvgRating.setText("0.0 ⭐");
+        }
+
+        tvWorkerProfileJobs.setText("0");
+        tvJobsCompleted.setText("0");
+        tvTotalEarned.setText("Rs. 0");
+    }
+
+    // =========================================================
+    // USERS FALLBACK
+    // =========================================================
+
+    private void loadWorkerFromUsers(String uid) {
+
+        db.collection("users")
+                .document(uid)
+                .get()
+                .addOnSuccessListener(userDocument -> {
+
+                    String name =
+                            userDocument.getString("name");
+
+                    if (name == null ||
+                            name.trim().isEmpty()) {
+
+                        name = "Worker";
+                    }
+
+                    currentWorkerName = name;
+
+                    workerNameHeader.setText(name);
+
+                    tvWorkerProfileName.setText(name);
+
+                    etWorkerName.setText(name);
+
+                    loadWorkerByName(name);
+                })
+                .addOnFailureListener(e ->
+                        Toast.makeText(
+                                this,
+                                "Could not load worker profile",
+                                Toast.LENGTH_LONG
+                        ).show()
+                );
+    }
+
+    private void loadWorkerByName(String name) {
+
+        db.collection("workers")
+                .whereEqualTo("name", name)
+                .limit(1)
+                .get()
+                .addOnSuccessListener(snapshot -> {
+
+                    if (!snapshot.isEmpty()) {
+
+                        loadWorkerData(
+                                snapshot.getDocuments().get(0)
+                        );
+                    }
+
+                    loadPendingAndAcceptedBookings();
+
+                    updateWorkerAvailability(
+                            true,
+                            null
+                    );
+                });
+    }
+
+    // =========================================================
+    // BOOKINGS
+    // =========================================================
+
     private void loadPendingAndAcceptedBookings() {
+
+        if (currentWorkerName == null ||
+                currentWorkerName.trim().isEmpty()) {
+
+            return;
+        }
 
         db.collection("bookings")
                 .whereEqualTo(
@@ -448,11 +738,27 @@ public class WorkerDashboardActivity extends AppCompatActivity {
                     incomingRequests.clear();
                     activeJobs.clear();
 
+                    int completedCount = 0;
+                    double totalEarned = 0;
+
                     for (QueryDocumentSnapshot doc :
                             querySnapshot) {
 
                         String status =
                                 doc.getString("status");
+
+                        if ("Completed".equals(status)) {
+
+                            completedCount++;
+
+                            String rate =
+                                    doc.getString("workerRate");
+
+                            totalEarned +=
+                                    parseRate(rate);
+
+                            continue;
+                        }
 
                         String customerId =
                                 doc.getString("customerId");
@@ -469,7 +775,8 @@ public class WorkerDashboardActivity extends AppCompatActivity {
                         String serviceTitle =
                                 doc.getString("serviceTitle");
 
-                        if (serviceTitle == null) {
+                        if (serviceTitle == null ||
+                                serviceTitle.trim().isEmpty()) {
 
                             serviceTitle =
                                     doc.getString("description");
@@ -493,9 +800,7 @@ public class WorkerDashboardActivity extends AppCompatActivity {
                                 doc.getString("time");
 
                         String timing =
-                                (date != null
-                                        ? date
-                                        : "")
+                                (date != null ? date : "")
                                         +
                                         (time != null
                                                 ? ", " + time
@@ -523,6 +828,23 @@ public class WorkerDashboardActivity extends AppCompatActivity {
                         }
                     }
 
+                    tvWorkerProfileJobs.setText(
+                            String.valueOf(completedCount)
+                    );
+
+                    tvJobsCompleted.setText(
+                            String.valueOf(completedCount)
+                    );
+
+                    tvTotalEarned.setText(
+                            "Rs. " +
+                                    String.format(
+                                            Locale.US,
+                                            "%.0f",
+                                            totalEarned
+                                    )
+                    );
+
                     renderIncomingRequests();
                     renderActiveJobs();
                 })
@@ -535,6 +857,10 @@ public class WorkerDashboardActivity extends AppCompatActivity {
                         ).show()
                 );
     }
+
+    // =========================================================
+    // WORKER CHATS
+    // =========================================================
 
     private void loadWorkerChats() {
 
@@ -563,9 +889,7 @@ public class WorkerDashboardActivity extends AppCompatActivity {
                     if (querySnapshot.isEmpty()) {
 
                         workerChatListContainer.addView(
-                                createEmptyText(
-                                        "No chats yet."
-                                )
+                                createEmptyText("No chats yet.")
                         );
 
                         return;
@@ -602,9 +926,7 @@ public class WorkerDashboardActivity extends AppCompatActivity {
                             continue;
                         }
 
-                        addedCustomerIds.add(
-                                customerId
-                        );
+                        addedCustomerIds.add(customerId);
 
                         String serviceTitle =
                                 doc.getString("serviceTitle");
@@ -640,13 +962,6 @@ public class WorkerDashboardActivity extends AppCompatActivity {
                                     "Could not load chats."
                             )
                     );
-
-                    Toast.makeText(
-                            this,
-                            "Could not load chats: "
-                                    + e.getMessage(),
-                            Toast.LENGTH_LONG
-                    ).show();
                 });
     }
 
@@ -683,6 +998,9 @@ public class WorkerDashboardActivity extends AppCompatActivity {
                         )
                 );
     }
+    // =========================================================
+    // CREATE WORKER CHAT CARD
+    // =========================================================
 
     private void createWorkerChatCard(
             String customerName,
@@ -698,7 +1016,7 @@ public class WorkerDashboardActivity extends AppCompatActivity {
         );
 
         row.setGravity(
-                android.view.Gravity.CENTER_VERTICAL
+                Gravity.CENTER_VERTICAL
         );
 
         row.setBackgroundResource(
@@ -727,10 +1045,7 @@ public class WorkerDashboardActivity extends AppCompatActivity {
 
         avatar.setText("💬");
         avatar.setTextSize(24);
-
-        avatar.setGravity(
-                android.view.Gravity.CENTER
-        );
+        avatar.setGravity(Gravity.CENTER);
 
         LinearLayout.LayoutParams avatarParams =
                 new LinearLayout.LayoutParams(
@@ -740,9 +1055,7 @@ public class WorkerDashboardActivity extends AppCompatActivity {
 
         avatarParams.setMarginEnd(dp(12));
 
-        avatar.setLayoutParams(
-                avatarParams
-        );
+        avatar.setLayoutParams(avatarParams);
 
         row.addView(avatar);
 
@@ -753,30 +1066,24 @@ public class WorkerDashboardActivity extends AppCompatActivity {
                 LinearLayout.VERTICAL
         );
 
-        LinearLayout.LayoutParams textParams =
+        textArea.setLayoutParams(
                 new LinearLayout.LayoutParams(
                         0,
                         LinearLayout.LayoutParams.WRAP_CONTENT,
                         1f
-                );
-
-        textArea.setLayoutParams(
-                textParams
+                )
         );
 
         TextView name =
                 new TextView(this);
 
         name.setText(customerName);
-
         name.setTextColor(
                 getResources().getColor(
                         R.color.text_main
                 )
         );
-
         name.setTextSize(16);
-
         name.setTypeface(
                 null,
                 android.graphics.Typeface.BOLD
@@ -788,26 +1095,12 @@ public class WorkerDashboardActivity extends AppCompatActivity {
                 new TextView(this);
 
         service.setText(serviceTitle);
-
         service.setTextColor(
                 getResources().getColor(
                         R.color.muted
                 )
         );
-
         service.setTextSize(12);
-
-        LinearLayout.LayoutParams serviceParams =
-                new LinearLayout.LayoutParams(
-                        LinearLayout.LayoutParams.MATCH_PARENT,
-                        LinearLayout.LayoutParams.WRAP_CONTENT
-                );
-
-        serviceParams.topMargin = dp(3);
-
-        service.setLayoutParams(
-                serviceParams
-        );
 
         textArea.addView(service);
 
@@ -817,18 +1110,13 @@ public class WorkerDashboardActivity extends AppCompatActivity {
                 new TextView(this);
 
         arrow.setText("›");
-
         arrow.setTextColor(
                 getResources().getColor(
                         R.color.muted
                 )
         );
-
         arrow.setTextSize(28);
-
-        arrow.setGravity(
-                android.view.Gravity.CENTER
-        );
+        arrow.setGravity(Gravity.CENTER);
 
         row.addView(arrow);
 
@@ -861,6 +1149,10 @@ public class WorkerDashboardActivity extends AppCompatActivity {
         workerChatListContainer.addView(row);
     }
 
+    // =========================================================
+    // INCOMING REQUESTS
+    // =========================================================
+
     private void renderIncomingRequests() {
 
         incomingRequestsContainer.removeAllViews();
@@ -884,6 +1176,10 @@ public class WorkerDashboardActivity extends AppCompatActivity {
             );
         }
     }
+
+    // =========================================================
+    // ACTIVE JOBS
+    // =========================================================
 
     private void renderActiveJobs() {
 
@@ -909,9 +1205,11 @@ public class WorkerDashboardActivity extends AppCompatActivity {
         }
     }
 
-    private TextView createEmptyText(
-            String text
-    ) {
+    // =========================================================
+    // EMPTY TEXT
+    // =========================================================
+
+    private TextView createEmptyText(String text) {
 
         TextView tv =
                 new TextView(this);
@@ -926,19 +1224,21 @@ public class WorkerDashboardActivity extends AppCompatActivity {
 
         tv.setTextSize(13);
 
-        tv.setGravity(
-                android.view.Gravity.CENTER
-        );
+        tv.setGravity(Gravity.CENTER);
 
         tv.setPadding(
                 0,
-                dp(12),
+                dp(15),
                 0,
-                dp(12)
+                dp(15)
         );
 
         return tv;
     }
+
+    // =========================================================
+    // INCOMING REQUEST CARD
+    // =========================================================
 
     private LinearLayout createIncomingRequestCard(
             WorkerRequestItem item
@@ -1005,16 +1305,26 @@ public class WorkerDashboardActivity extends AppCompatActivity {
 
         desc.setTextSize(13);
 
+        LinearLayout.LayoutParams descParams =
+                new LinearLayout.LayoutParams(
+                        LinearLayout.LayoutParams.MATCH_PARENT,
+                        LinearLayout.LayoutParams.WRAP_CONTENT
+                );
+
+        descParams.topMargin = dp(5);
+
+        desc.setLayoutParams(descParams);
+
         card.addView(desc);
 
         TextView details =
                 new TextView(this);
 
         details.setText(
-                "📍 "
-                        + item.area
-                        + "  •  🕐 "
-                        + item.timing
+                "📍 " +
+                        item.area +
+                        "   •   🕐 " +
+                        item.timing
         );
 
         details.setTextColor(
@@ -1031,12 +1341,10 @@ public class WorkerDashboardActivity extends AppCompatActivity {
                         LinearLayout.LayoutParams.WRAP_CONTENT
                 );
 
-        detailsParams.topMargin = dp(6);
+        detailsParams.topMargin = dp(7);
         detailsParams.bottomMargin = dp(12);
 
-        details.setLayoutParams(
-                detailsParams
-        );
+        details.setLayoutParams(detailsParams);
 
         card.addView(details);
 
@@ -1046,6 +1354,10 @@ public class WorkerDashboardActivity extends AppCompatActivity {
         buttonsRow.setOrientation(
                 LinearLayout.HORIZONTAL
         );
+
+        // =====================================================
+        // ACCEPT
+        // =====================================================
 
         TextView btnAccept =
                 new TextView(this);
@@ -1062,9 +1374,7 @@ public class WorkerDashboardActivity extends AppCompatActivity {
 
         btnAccept.setTextSize(13);
 
-        btnAccept.setGravity(
-                android.view.Gravity.CENTER
-        );
+        btnAccept.setGravity(Gravity.CENTER);
 
         btnAccept.setBackgroundResource(
                 R.drawable.bg_btn_green
@@ -1124,6 +1434,10 @@ public class WorkerDashboardActivity extends AppCompatActivity {
 
         buttonsRow.addView(btnAccept);
 
+        // =====================================================
+        // DECLINE
+        // =====================================================
+
         TextView btnDecline =
                 new TextView(this);
 
@@ -1139,9 +1453,7 @@ public class WorkerDashboardActivity extends AppCompatActivity {
 
         btnDecline.setTextSize(13);
 
-        btnDecline.setGravity(
-                android.view.Gravity.CENTER
-        );
+        btnDecline.setGravity(Gravity.CENTER);
 
         btnDecline.setBackgroundResource(
                 R.drawable.bg_btn_red
@@ -1154,15 +1466,12 @@ public class WorkerDashboardActivity extends AppCompatActivity {
                 dp(10)
         );
 
-        LinearLayout.LayoutParams declineParams =
+        btnDecline.setLayoutParams(
                 new LinearLayout.LayoutParams(
                         0,
                         LinearLayout.LayoutParams.WRAP_CONTENT,
                         1f
-                );
-
-        btnDecline.setLayoutParams(
-                declineParams
+                )
         );
 
         btnDecline.setOnClickListener(v -> {
@@ -1201,6 +1510,10 @@ public class WorkerDashboardActivity extends AppCompatActivity {
 
         return card;
     }
+
+    // =========================================================
+    // ACTIVE JOB CARD
+    // =========================================================
 
     private LinearLayout createActiveJobCard(
             WorkerRequestItem item
@@ -1258,9 +1571,9 @@ public class WorkerDashboardActivity extends AppCompatActivity {
                 new TextView(this);
 
         desc.setText(
-                item.description
-                        + " — "
-                        + item.timing
+                item.description +
+                        " — " +
+                        item.timing
         );
 
         desc.setTextColor(
@@ -1290,6 +1603,10 @@ public class WorkerDashboardActivity extends AppCompatActivity {
                 LinearLayout.HORIZONTAL
         );
 
+        // =====================================================
+        // CHAT
+        // =====================================================
+
         TextView btnChat =
                 new TextView(this);
 
@@ -1303,9 +1620,7 @@ public class WorkerDashboardActivity extends AppCompatActivity {
 
         btnChat.setTextSize(13);
 
-        btnChat.setGravity(
-                android.view.Gravity.CENTER
-        );
+        btnChat.setGravity(Gravity.CENTER);
 
         btnChat.setBackgroundResource(
                 R.drawable.bg_btn_outline
@@ -1357,10 +1672,16 @@ public class WorkerDashboardActivity extends AppCompatActivity {
 
         buttonsRow.addView(btnChat);
 
+        // =====================================================
+        // MARK DONE
+        // =====================================================
+
         TextView btnMarkDone =
                 new TextView(this);
 
-        btnMarkDone.setText("✅ Mark Done");
+        btnMarkDone.setText(
+                "✅ Mark Done"
+        );
 
         btnMarkDone.setTextColor(
                 getResources().getColor(
@@ -1370,9 +1691,7 @@ public class WorkerDashboardActivity extends AppCompatActivity {
 
         btnMarkDone.setTextSize(13);
 
-        btnMarkDone.setGravity(
-                android.view.Gravity.CENTER
-        );
+        btnMarkDone.setGravity(Gravity.CENTER);
 
         btnMarkDone.setBackgroundResource(
                 R.drawable.bg_btn_green
@@ -1385,14 +1704,13 @@ public class WorkerDashboardActivity extends AppCompatActivity {
                 dp(10)
         );
 
-        LinearLayout.LayoutParams doneParams =
+        btnMarkDone.setLayoutParams(
                 new LinearLayout.LayoutParams(
                         0,
                         LinearLayout.LayoutParams.WRAP_CONTENT,
                         1f
-                );
-
-        btnMarkDone.setLayoutParams(doneParams);
+                )
+        );
 
         btnMarkDone.setOnClickListener(v -> {
 
@@ -1427,6 +1745,8 @@ public class WorkerDashboardActivity extends AppCompatActivity {
                         activeJobs.remove(item);
 
                         renderActiveJobs();
+
+                        loadPendingAndAcceptedBookings();
                     })
                     .addOnFailureListener(e -> {
 
@@ -1448,10 +1768,33 @@ public class WorkerDashboardActivity extends AppCompatActivity {
         return card;
     }
 
+    // =========================================================
+    // AVAILABILITY
+    // =========================================================
+
     private void updateWorkerAvailability(
             boolean available,
             Runnable afterDone
     ) {
+
+        if (currentWorkerDocumentId != null &&
+                !currentWorkerDocumentId.isEmpty()) {
+
+            db.collection("workers")
+                    .document(currentWorkerDocumentId)
+                    .update(
+                            "isAvailable",
+                            available
+                    )
+                    .addOnCompleteListener(task -> {
+
+                        if (afterDone != null) {
+                            afterDone.run();
+                        }
+                    });
+
+            return;
+        }
 
         if (currentWorkerName == null ||
                 currentWorkerName.trim().isEmpty()) {
@@ -1480,19 +1823,11 @@ public class WorkerDashboardActivity extends AppCompatActivity {
                                 .update(
                                         "isAvailable",
                                         available
-                                )
-                                .addOnCompleteListener(task -> {
+                                );
+                    }
 
-                                    if (afterDone != null) {
-                                        afterDone.run();
-                                    }
-                                });
-
-                    } else {
-
-                        if (afterDone != null) {
-                            afterDone.run();
-                        }
+                    if (afterDone != null) {
+                        afterDone.run();
                     }
                 })
                 .addOnFailureListener(e -> {
@@ -1502,6 +1837,42 @@ public class WorkerDashboardActivity extends AppCompatActivity {
                     }
                 });
     }
+
+    // =========================================================
+    // RATE PARSER
+    // =========================================================
+
+    private double parseRate(String rate) {
+
+        if (rate == null ||
+                rate.trim().isEmpty()) {
+
+            return 0;
+        }
+
+        try {
+
+            String cleaned =
+                    rate.replaceAll(
+                            "[^0-9.]",
+                            ""
+                    );
+
+            if (cleaned.isEmpty()) {
+                return 0;
+            }
+
+            return Double.parseDouble(cleaned);
+
+        } catch (Exception e) {
+
+            return 0;
+        }
+    }
+
+    // =========================================================
+    // DP
+    // =========================================================
 
     private int dp(int value) {
 
@@ -1513,5 +1884,35 @@ public class WorkerDashboardActivity extends AppCompatActivity {
         return (int) (
                 value * density
         );
+    }
+
+    // =========================================================
+    // WORKER REQUEST ITEM
+    // =========================================================
+
+    private static class WorkerRequestItem {
+
+        String customerName;
+        String description;
+        String area;
+        String timing;
+        String bookingId;
+        String customerId;
+
+        WorkerRequestItem(
+                String customerName,
+                String description,
+                String area,
+                String timing,
+                String bookingId
+        ) {
+
+            this.customerName = customerName;
+            this.description = description;
+            this.area = area;
+            this.timing = timing;
+            this.bookingId = bookingId;
+            this.customerId = "";
+        }
     }
 }

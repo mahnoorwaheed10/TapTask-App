@@ -27,16 +27,16 @@
                 android:text="←"
                 android:textColor="@color/white"
                 android:textSize="22sp"
-                android:paddingEnd="16dp"/>
+                android:paddingEnd="16dp" />
 
             <TextView
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="@string/send_payment_to"
+                android:text="Payment"
                 android:textColor="@color/white"
                 android:textSize="17sp"
-                android:textStyle="bold"/>
+                android:textStyle="bold" />
 
         </LinearLayout>
 
@@ -46,69 +46,75 @@
             android:orientation="vertical"
             android:padding="24dp">
 
-            <!-- Payment method icon + name -->
+            <!-- Payment Method Card -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
                 android:gravity="center"
                 android:background="@drawable/bg_card"
-                android:padding="24dp"
+                android:padding="28dp"
                 android:layout_marginBottom="20dp">
 
                 <TextView
                     android:id="@+id/tvPaymentMethodIcon"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="📱"
-                    android:textSize="40sp"
-                    android:layout_marginBottom="12dp"/>
+                    android:text="💳"
+                    android:textSize="48sp"
+                    android:layout_marginBottom="12dp" />
 
                 <TextView
                     android:id="@+id/tvPaymentMethodName"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="EasyPaisa"
+                    android:text="Stripe"
                     android:textColor="@color/text_main"
-                    android:textSize="18sp"
+                    android:textSize="20sp"
                     android:textStyle="bold"
-                    android:layout_marginBottom="16dp"/>
+                    android:layout_marginBottom="12dp" />
 
                 <TextView
                     android:id="@+id/tvPaymentNumber"
-                    android:layout_width="match_parent"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="0300-1234567"
+                    android:text="Secure Online Payment"
                     android:textColor="@color/primary"
-                    android:textSize="24sp"
+                    android:textSize="15sp"
                     android:textStyle="bold"
                     android:gravity="center"
                     android:background="@drawable/bg_chip_light"
-                    android:padding="14dp"
-                    android:layout_marginBottom="16dp"/>
+                    android:paddingHorizontal="18dp"
+                    android:paddingVertical="12dp" />
 
                 <TextView
                     android:id="@+id/btnCopyNumber"
-                    android:layout_width="match_parent"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/copy_number"
-                    style="@style/PillButton.Outline"
-                    android:gravity="center"
-                    android:padding="12dp"/>
+                    android:text="Copy Number"
+                    android:textColor="@color/primary"
+                    android:textSize="13sp"
+                    android:textStyle="bold"
+                    android:padding="8dp"
+                    android:layout_marginTop="8dp"
+                    android:clickable="true"
+                    android:focusable="true" />
 
             </LinearLayout>
 
+            <!-- Payment instruction -->
             <TextView
                 android:id="@+id/tvPaymentInstruction"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Send the exact amount to the number above using your EasyPaisa app, then upload a screenshot as proof."
+                android:text="Pay securely using Stripe. Your card details are handled securely by Stripe."
                 android:textColor="@color/muted"
-                android:textSize="13sp"
+                android:textSize="14sp"
                 android:gravity="center"
-                android:layout_marginBottom="24dp"/>
+                android:lineSpacingExtra="4dp"
+                android:layout_marginBottom="24dp" />
 
-            <!-- Upload screenshot -->
+            <!-- Stripe Payment Card -->
             <LinearLayout
                 android:id="@+id/btnUploadScreenshot"
                 android:layout_width="match_parent"
@@ -117,33 +123,46 @@
                 android:gravity="center"
                 android:background="@drawable/bg_payment_card"
                 android:padding="24dp"
-                android:layout_marginBottom="12dp">
+                android:layout_marginBottom="20dp">
 
                 <TextView
                     android:id="@+id/tvUploadStatus"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/upload_screenshot"
+                    android:text="🔒 Secure payment powered by Stripe"
                     android:textColor="@color/primary"
                     android:textSize="14sp"
-                    android:textStyle="bold"/>
+                    android:textStyle="bold"
+                    android:gravity="center" />
+
+                <ImageView
+                    android:id="@+id/ivScreenshotPreview"
+                    android:layout_width="180dp"
+                    android:layout_height="180dp"
+                    android:layout_marginTop="16dp"
+                    android:scaleType="centerCrop"
+                    android:visibility="gone"
+                    android:contentDescription="Payment screenshot preview" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Visa • Mastercard • Debit/Credit Cards"
+                    android:textColor="@color/muted"
+                    android:textSize="12sp"
+                    android:layout_marginTop="8dp"
+                    android:gravity="center" />
 
             </LinearLayout>
 
-            <ImageView
-                android:id="@+id/ivScreenshotPreview"
-                android:layout_width="match_parent"
-                android:layout_height="200dp"
-                android:scaleType="centerCrop"
-                android:visibility="gone"
-                android:layout_marginBottom="24dp"/>
-
+            <!-- Stripe payment button -->
             <Button
                 android:id="@+id/btnConfirmPaymentSent"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/ive_sent_payment"
-                style="@style/PillButton"/>
+                android:text="Pay with Stripe"
+                android:textAllCaps="false"
+                style="@style/PillButton" />
 
         </LinearLayout>
 

@@ -224,7 +224,36 @@ public class WorkersListActivity extends AppCompatActivity {
                     for (DocumentSnapshot document :
                             querySnapshot.getDocuments()) {
 
+                        // ====================================================
+                        // ADMIN VERIFICATION CHECK
+                        // ====================================================
+
+                        String verificationStatus =
+                                getField(
+                                        document,
+                                        "verificationStatus"
+                                );
+
+                        /*
+                         * Existing workers which do not have this field
+                         * are treated as already verified.
+                         *
+                         * New workers are saved as "pending" by AuthActivity.
+                         *
+                         * Pending and rejected workers will NOT appear
+                         * on customer side.
+                         */
+
+                        if (!verificationStatus.isEmpty() &&
+                                !verificationStatus.equalsIgnoreCase("verified")) {
+
+                            continue;
+                        }
+
+                        // ====================================================
                         // CATEGORY
+                        // ====================================================
+
                         String category =
                                 getField(
                                         document,
@@ -408,7 +437,7 @@ public class WorkersListActivity extends AppCompatActivity {
                     }
 
                     // ====================================================
-                    // DISPLAY ALL MATCHING WORKERS
+                    // DISPLAY ALL VERIFIED WORKERS
                     // ====================================================
 
                     for (WorkerData worker : workers) {
