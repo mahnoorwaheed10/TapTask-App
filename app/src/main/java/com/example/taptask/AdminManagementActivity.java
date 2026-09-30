@@ -1,5 +1,6 @@
 package com.example.taptask;
 
+import android.content.Intent;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -12,23 +13,27 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.Gravity;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.ListenerRegistration;
 import com.google.firebase.firestore.QuerySnapshot;
-import com.google.firebase.Timestamp;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -51,6 +56,8 @@ public class AdminManagementActivity extends AppCompatActivity {
     private ListenerRegistration usersListener;
     private ListenerRegistration workersListener;
     private ListenerRegistration bookingsListener;
+    private ListenerRegistration areasListener;
+    private ListenerRegistration feedbackListener;
 
     // =========================================================
     // STATISTICS REAL-TIME DATA
@@ -108,7 +115,79 @@ public class AdminManagementActivity extends AppCompatActivity {
 
         setupScreen();
         setupSearch();
+        setupBottomNavigation();
         loadData();
+    }
+
+    // =========================================================
+    // BOTTOM NAVIGATION
+    // =========================================================
+
+    private void setupBottomNavigation() {
+
+        View home =
+                findViewById(R.id.btnNavHome);
+
+        View statistics =
+                findViewById(R.id.btnNavStatistics);
+
+        View feedback =
+                findViewById(R.id.btnNavFeedback);
+
+        // --------------------------------------------------------
+        // HOME
+        // --------------------------------------------------------
+
+        if (home != null) {
+
+            home.setOnClickListener(v -> finish());
+        }
+
+        // --------------------------------------------------------
+        // STATISTICS
+        // --------------------------------------------------------
+
+        if (statistics != null) {
+
+            statistics.setOnClickListener(v -> {
+
+                Intent intent =
+                        new Intent(
+                                AdminManagementActivity.this,
+                                AdminManagementActivity.class
+                        );
+
+                intent.putExtra(
+                        "MODE",
+                        "STATISTICS"
+                );
+
+                startActivity(intent);
+            });
+        }
+
+        // --------------------------------------------------------
+        // APP FEEDBACK
+        // --------------------------------------------------------
+
+        if (feedback != null) {
+
+            feedback.setOnClickListener(v -> {
+
+                Intent intent =
+                        new Intent(
+                                AdminManagementActivity.this,
+                                AdminManagementActivity.class
+                        );
+
+                intent.putExtra(
+                        "MODE",
+                        "APP_FEEDBACK"
+                );
+
+                startActivity(intent);
+            });
+        }
     }
 
     // =========================================================
@@ -170,7 +249,7 @@ public class AdminManagementActivity extends AppCompatActivity {
 
             title.setText("Manage Areas");
             subtitle.setText(
-                    "TapTask service coverage"
+                    "Tench and Saddar service coverage"
             );
 
             searchBox.setVisibility(
@@ -187,6 +266,16 @@ public class AdminManagementActivity extends AppCompatActivity {
             searchBox.setVisibility(
                     View.GONE
             );
+
+        } else if (mode.equals("APP_FEEDBACK")) {
+
+            title.setText("App Feedback");
+            subtitle.setText(
+                    "Customer feedback and suggestions"
+            );
+
+            searchBox.setVisibility(View.VISIBLE);
+            searchBox.setHint("Search feedback");
         }
     }
 
@@ -255,6 +344,10 @@ public class AdminManagementActivity extends AppCompatActivity {
         } else if (mode.equals("STATISTICS")) {
 
             showStatistics();
+
+        } else if (mode.equals("APP_FEEDBACK")) {
+
+            listenFeedback();
         }
     }
 
@@ -376,6 +469,43 @@ public class AdminManagementActivity extends AppCompatActivity {
                                                     ||
                                                     snapshot == null
                                     ) {
+
+                                        showError();
+                                        return;
+                                    }
+
+                                    items.clear();
+
+                                    items.addAll(
+                                            snapshot.getDocuments()
+                                    );
+
+                                    filterData(
+                                            searchBox
+                                                    .getText()
+                                                    .toString()
+                                    );
+                                }
+                        );
+    }
+
+    // =========================================================
+    // APP FEEDBACK
+    // =========================================================
+
+    private void listenFeedback() {
+
+        if (feedbackListener != null) {
+            feedbackListener.remove();
+        }
+
+        feedbackListener =
+                db.collection("app_feedback")
+                        .addSnapshotListener(
+                                (snapshot, error) -> {
+
+                                    if (error != null
+                                            || snapshot == null) {
 
                                         showError();
                                         return;
@@ -578,7 +708,514 @@ public class AdminManagementActivity extends AppCompatActivity {
             }
 
             showBookings(filtered);
+
+        } else if (mode.equals("APP_FEEDBACK")) {
+
+            List<DocumentSnapshot> filtered =
+                    new ArrayList<>();
+
+            for (
+                    DocumentSnapshot feedback :
+                    items
+            ) {
+
+                String customerEmail =
+                        getString(
+                                feedback,
+                                "customerEmail",
+                                ""
+                        );
+
+                String customerId =
+                        getString(
+                                feedback,
+                                "customerId",
+                                ""
+                        );
+
+                String improvement =
+                        getString(
+                                feedback,
+                                "improvement",
+                                ""
+                        );
+
+                String featureRequest =
+                        getString(
+                                feedback,
+                                "featureRequest",
+                                ""
+                        );
+
+                String problem =
+                        getString(
+                                feedback,
+                                "problem",
+                                ""
+                        );
+
+                String bookingExperience =
+                        getString(
+                                feedback,
+                                "bookingExperience",
+                                ""
+                        );
+
+                String appEase =
+                        getString(
+                                feedback,
+                                "appEase",
+                                ""
+                        );
+
+                String paymentExperience =
+                        getString(
+                                feedback,
+                                "paymentExperience",
+                                ""
+                        );
+
+                String rating =
+                        getString(
+                                feedback,
+                                "rating",
+                                ""
+                        );
+
+                String searchable =
+                        (customerEmail + " "
+                                + customerId + " "
+                                + improvement + " "
+                                + featureRequest + " "
+                                + problem + " "
+                                + bookingExperience + " "
+                                + appEase + " "
+                                + paymentExperience + " "
+                                + rating)
+                                .toLowerCase(
+                                        Locale.getDefault()
+                                );
+
+                if (searchable.contains(q)) {
+                    filtered.add(feedback);
+                }
+            }
+
+            showFeedback(filtered);
         }
+    }
+
+    // =========================================================
+    // APP FEEDBACK UI
+    // =========================================================
+
+    private void showFeedback(
+            List<DocumentSnapshot> feedbackList) {
+
+        container.removeAllViews();
+
+        if (feedbackList.isEmpty()) {
+            empty("No app feedback found");
+            return;
+        }
+
+        for (
+                DocumentSnapshot feedback :
+                feedbackList
+        ) {
+            container.addView(
+                    feedbackCard(feedback)
+            );
+        }
+    }
+
+    private View feedbackCard(
+            DocumentSnapshot feedback) {
+
+        LinearLayout card =
+                verticalCard();
+
+        String email =
+                getString(
+                        feedback,
+                        "customerEmail",
+                        ""
+                );
+
+        String customerId =
+                getString(
+                        feedback,
+                        "customerId",
+                        ""
+                );
+
+        String displayCustomer =
+                email.trim().isEmpty()
+                        ? (customerId.trim().isEmpty()
+                        ? "Customer"
+                        : customerId)
+                        : email;
+
+        LinearLayout top =
+                new LinearLayout(this);
+
+        top.setGravity(
+                Gravity.CENTER_VERTICAL
+        );
+
+        top.addView(
+                avatar(
+                        getInitial(displayCustomer),
+                        "#6658D9"
+                )
+        );
+
+        LinearLayout info =
+                new LinearLayout(this);
+
+        info.setOrientation(
+                LinearLayout.VERTICAL
+        );
+
+        LinearLayout.LayoutParams infoParams =
+                new LinearLayout.LayoutParams(
+                        0,
+                        -2,
+                        1
+                );
+
+        infoParams.leftMargin = dp(12);
+        info.setLayoutParams(infoParams);
+
+        info.addView(
+                mainText("Customer Feedback")
+        );
+
+        info.addView(
+                smallText(displayCustomer)
+        );
+
+        if (!customerId.trim().isEmpty()) {
+            info.addView(
+                    smallText(
+                            "Customer ID  •  " + customerId
+                    )
+            );
+        }
+
+        top.addView(info);
+
+        String rating =
+                getString(
+                        feedback,
+                        "rating",
+                        "0"
+                );
+
+        top.addView(
+                badge(
+                        "★ " + rating + "/5",
+                        "#EAE7FF",
+                        "#5144B7"
+                )
+        );
+
+        card.addView(top);
+
+        LinearLayout divider =
+                new LinearLayout(this);
+
+        divider.setBackgroundColor(
+                Color.parseColor("#EEEAF8")
+        );
+
+        LinearLayout.LayoutParams dividerParams =
+                new LinearLayout.LayoutParams(
+                        -1,
+                        dp(1)
+                );
+
+        dividerParams.topMargin = dp(12);
+        dividerParams.bottomMargin = dp(12);
+        divider.setLayoutParams(dividerParams);
+        card.addView(divider);
+
+        String bookingExperience =
+                getString(
+                        feedback,
+                        "bookingExperience",
+                        "Not answered"
+                );
+
+        String appEase =
+                getString(
+                        feedback,
+                        "appEase",
+                        "Not answered"
+                );
+
+        String paymentExperience =
+                getString(
+                        feedback,
+                        "paymentExperience",
+                        "Not answered"
+                );
+
+        LinearLayout detailsRow =
+                new LinearLayout(this);
+
+        detailsRow.setOrientation(
+                LinearLayout.HORIZONTAL
+        );
+
+        detailsRow.addView(
+                detailBox(
+                        "Booking",
+                        bookingExperience
+                )
+        );
+
+        detailsRow.addView(
+                detailBox(
+                        "Easy to use",
+                        appEase
+                )
+        );
+
+        detailsRow.addView(
+                detailBox(
+                        "Payment",
+                        paymentExperience
+                )
+        );
+
+        card.addView(detailsRow);
+
+        LinearLayout serviceTitle =
+                new LinearLayout(this);
+
+        serviceTitle.setPadding(
+                0,
+                dp(12),
+                0,
+                dp(5)
+        );
+
+        serviceTitle.addView(
+                smallText("Service Experience")
+        );
+
+        card.addView(serviceTitle);
+
+        addFeedbackChipIfTrue(
+                card,
+                feedback,
+                "workerProfessional",
+                "Worker was professional"
+        );
+
+        addFeedbackChipIfTrue(
+                card,
+                feedback,
+                "workerOnTime",
+                "Worker arrived on time"
+        );
+
+        addFeedbackChipIfTrue(
+                card,
+                feedback,
+                "goodServiceQuality",
+                "Good service quality"
+        );
+
+        addFeedbackChipIfTrue(
+                card,
+                feedback,
+                "goodCommunication",
+                "Good communication"
+        );
+
+        addFeedbackSection(
+                card,
+                "What can we improve?",
+                getString(
+                        feedback,
+                        "improvement",
+                        ""
+                ),
+                "#F5F3FF",
+                "#5144B7"
+        );
+
+        addFeedbackSection(
+                card,
+                "Feature Request",
+                getString(
+                        feedback,
+                        "featureRequest",
+                        ""
+                ),
+                "#EFF6FF",
+                "#1D4ED8"
+        );
+
+        addFeedbackSection(
+                card,
+                "Problem Report",
+                getString(
+                        feedback,
+                        "problem",
+                        ""
+                ),
+                "#FFF1F2",
+                "#BE123C"
+        );
+
+        TextView submitted =
+                smallText(
+                        "Submitted  •  "
+                                + formatFeedbackDate(
+                                feedback
+                        )
+                );
+
+        LinearLayout.LayoutParams submittedParams =
+                new LinearLayout.LayoutParams(
+                        -1,
+                        -2
+                );
+
+        submittedParams.topMargin = dp(12);
+        submitted.setLayoutParams(submittedParams);
+        card.addView(submitted);
+
+        return card;
+    }
+
+    private void addFeedbackChipIfTrue(
+            LinearLayout card,
+            DocumentSnapshot feedback,
+            String field,
+            String text) {
+
+        Object value = feedback.get(field);
+
+        boolean checked =
+                value instanceof Boolean
+                        && (Boolean) value;
+
+        if (!checked) {
+            return;
+        }
+
+        TextView chip =
+                badge(
+                        "✓  " + text,
+                        "#DCFCE7",
+                        "#15803D"
+                );
+
+        LinearLayout.LayoutParams params =
+                new LinearLayout.LayoutParams(
+                        -2,
+                        -2
+                );
+
+        params.topMargin = dp(4);
+        chip.setLayoutParams(params);
+        card.addView(chip);
+    }
+
+    private void addFeedbackSection(
+            LinearLayout card,
+            String titleText,
+            String value,
+            String background,
+            String foreground) {
+
+        if (value == null
+                || value.trim().isEmpty()) {
+            return;
+        }
+
+        LinearLayout section =
+                new LinearLayout(this);
+
+        section.setOrientation(
+                LinearLayout.VERTICAL
+        );
+
+        section.setPadding(
+                dp(11),
+                dp(9),
+                dp(11),
+                dp(9)
+        );
+
+        section.setBackground(
+                rounded(
+                        Color.parseColor(background),
+                        Color.TRANSPARENT,
+                        11
+                )
+        );
+
+        LinearLayout.LayoutParams params =
+                new LinearLayout.LayoutParams(
+                        -1,
+                        -2
+                );
+
+        params.topMargin = dp(9);
+        section.setLayoutParams(params);
+
+        TextView heading =
+                smallText(titleText);
+        heading.setTextColor(
+                Color.parseColor(foreground)
+        );
+        heading.setTypeface(
+                null,
+                Typeface.BOLD
+        );
+
+        section.addView(heading);
+
+        TextView body =
+                smallText(value);
+        body.setTextColor(
+                Color.parseColor("#374151")
+        );
+        body.setTextSize(12);
+
+        LinearLayout.LayoutParams bodyParams =
+                new LinearLayout.LayoutParams(
+                        -1,
+                        -2
+                );
+        bodyParams.topMargin = dp(4);
+        body.setLayoutParams(bodyParams);
+
+        section.addView(body);
+        card.addView(section);
+    }
+
+    private String formatFeedbackDate(
+            DocumentSnapshot feedback) {
+
+        Date date =
+                convertToDate(
+                        feedback.get("createdAt")
+                );
+
+        if (date == null) {
+            return "Date unavailable";
+        }
+
+        return new SimpleDateFormat(
+                "dd MMM yyyy, hh:mm a",
+                Locale.getDefault()
+        ).format(date);
     }
 
     // =========================================================
@@ -840,9 +1477,7 @@ public class AdminManagementActivity extends AppCompatActivity {
         infoParams.leftMargin =
                 dp(12);
 
-        info.setLayoutParams(
-                infoParams
-        );
+        info.setLayoutParams(infoParams);
 
         info.addView(
                 mainText(name)
@@ -1300,80 +1935,765 @@ public class AdminManagementActivity extends AppCompatActivity {
                 dp(2),
                 dp(3),
                 dp(2),
-                dp(8)
+                dp(10)
         );
 
         TextView heading =
                 mainText(
-                        "Active Service Area"
+                        "Service Areas"
                 );
 
-        heading.setTextSize(16);
+        heading.setTextSize(18);
 
         section.addView(heading);
 
         section.addView(
                 smallText(
-                        "Currently available for TapTask services"
+                        "Manage the service areas available in TapTask"
                 )
         );
 
         container.addView(section);
 
+        // -----------------------------------------------------
+        // ADD AREA BUTTON
+        // -----------------------------------------------------
+
+        Button addButton =
+                new Button(this);
+
+        addButton.setText(
+                "+  Add Service Area"
+        );
+
+        addButton.setTextColor(
+                Color.WHITE
+        );
+
+        addButton.setTextSize(12);
+
+        addButton.setTypeface(
+                null,
+                Typeface.BOLD
+        );
+
+        addButton.setAllCaps(false);
+
+        addButton.setBackground(
+                rounded(
+                        Color.parseColor("#6658D9"),
+                        Color.TRANSPARENT,
+                        14
+                )
+        );
+
+        LinearLayout.LayoutParams addParams =
+                new LinearLayout.LayoutParams(
+                        -1,
+                        dp(48)
+                );
+
+        addParams.bottomMargin =
+                dp(15);
+
+        addButton.setLayoutParams(
+                addParams
+        );
+
+        addButton.setOnClickListener(
+                v -> showAddAreaDialog()
+        );
+
+        container.addView(addButton);
+
+        // -----------------------------------------------------
+        // FIREBASE AREAS
+        // -----------------------------------------------------
+
+        listenAreas();
+    }
+
+    private void listenAreas() {
+
+        if (areasListener != null) {
+            areasListener.remove();
+        }
+
+        areasListener =
+                db.collection("areas")
+                        .addSnapshotListener(
+                                (snapshot, error) -> {
+
+                                    if (
+                                            error != null
+                                                    ||
+                                                    snapshot == null
+                                    ) {
+
+                                        showAreaCards(
+                                                new ArrayList<>()
+                                        );
+
+                                        return;
+                                    }
+
+                                    showAreaCards(
+                                            snapshot.getDocuments()
+                                    );
+                                }
+                        );
+    }
+
+    private void showAreaCards(
+            List<DocumentSnapshot> documents) {
+
+        /*
+         * The first two views are:
+         *
+         * 0 = section heading
+         * 1 = Add Service Area button
+         *
+         * Everything after that is an area card.
+         */
+        while (container.getChildCount() > 2) {
+
+            container.removeViewAt(2);
+        }
+
+        boolean tenchFound = false;
+        boolean saddarFound = false;
+
+        for (
+                DocumentSnapshot document :
+                documents
+        ) {
+
+            String name =
+                    getString(
+                            document,
+                            "name",
+                            ""
+                    );
+
+            if (
+                    name.equalsIgnoreCase(
+                            "Tench"
+                    )
+            ) {
+
+                tenchFound = true;
+
+                addAreaCard(
+                        document,
+                        "Tench"
+                );
+
+            } else if (
+                    name.equalsIgnoreCase(
+                            "Saddar"
+                    )
+            ) {
+
+                saddarFound = true;
+
+                addAreaCard(
+                        document,
+                        "Saddar"
+                );
+            }
+        }
+
+        /*
+         * If Firebase does not contain an area yet,
+         * still show both fixed areas as "Not Added".
+         *
+         * This makes the admin page useful immediately.
+         */
+
+        if (!tenchFound) {
+
+            addDefaultAreaCard(
+                    "Tench"
+            );
+        }
+
+        if (!saddarFound) {
+
+            addDefaultAreaCard(
+                    "Saddar"
+            );
+        }
+    }
+
+    private void addDefaultAreaCard(
+            String areaName) {
+
         LinearLayout card =
                 horizontalCard();
 
+        card.setClickable(true);
+        card.setFocusable(true);
+
         card.addView(
                 avatar(
-                        "⌖",
+                        areaName.equalsIgnoreCase("Tench")
+                                ? "T"
+                                : "S",
                         "#6658D9"
                 )
         );
 
-        LinearLayout areaInfo =
+        LinearLayout info =
                 new LinearLayout(this);
 
-        areaInfo.setOrientation(
+        info.setOrientation(
                 LinearLayout.VERTICAL
         );
 
-        LinearLayout.LayoutParams areaParams =
+        LinearLayout.LayoutParams infoParams =
                 new LinearLayout.LayoutParams(
                         0,
                         -2,
                         1
                 );
 
-        areaParams.leftMargin =
+        infoParams.leftMargin =
                 dp(13);
 
-        areaInfo.setLayoutParams(
-                areaParams
+        info.setLayoutParams(
+                infoParams
         );
 
-        areaInfo.addView(
-                mainText(
-                        "Tench Saddar"
-                )
+        info.addView(
+                mainText(areaName)
         );
 
-        areaInfo.addView(
+        info.addView(
                 smallText(
-                        "Active TapTask service area"
+                        "Service area is not added yet"
                 )
         );
 
-        card.addView(areaInfo);
+        card.addView(info);
 
         card.addView(
                 badge(
-                        "Active",
-                        "#E0F6EA",
-                        "#168050"
+                        "Not Added",
+                        "#F1EFF7",
+                        "#777489"
                 )
         );
 
+        card.setOnClickListener(
+                v ->
+                        showAddSpecificAreaDialog(
+                                areaName
+                        )
+        );
+
         container.addView(card);
+    }
+
+    private void addAreaCard(
+            DocumentSnapshot document,
+            String areaName) {
+
+        LinearLayout card =
+                horizontalCard();
+
+        card.setClickable(true);
+        card.setFocusable(true);
+
+        card.addView(
+                avatar(
+                        areaName.equalsIgnoreCase("Tench")
+                                ? "T"
+                                : "S",
+                        "#6658D9"
+                )
+        );
+
+        LinearLayout info =
+                new LinearLayout(this);
+
+        info.setOrientation(
+                LinearLayout.VERTICAL
+        );
+
+        LinearLayout.LayoutParams infoParams =
+                new LinearLayout.LayoutParams(
+                        0,
+                        -2,
+                        1
+                );
+
+        infoParams.leftMargin =
+                dp(13);
+
+        info.setLayoutParams(
+                infoParams
+        );
+
+        info.addView(
+                mainText(areaName)
+        );
+
+        boolean active =
+                document.getBoolean("active") == null
+                        ||
+                        Boolean.TRUE.equals(
+                                document.getBoolean("active")
+                        );
+
+        info.addView(
+                smallText(
+                        active
+                                ? "Available for TapTask services"
+                                : "Currently unavailable for services"
+                )
+        );
+
+        card.addView(info);
+
+        card.addView(
+                badge(
+                        active
+                                ? "Active"
+                                : "Inactive",
+                        active
+                                ? "#E0F6EA"
+                                : "#FFE7EA",
+                        active
+                                ? "#168050"
+                                : "#BE3A48"
+                )
+        );
+
+        card.setOnClickListener(
+                v ->
+                        showEditAreaDialog(
+                                document,
+                                areaName,
+                                active
+                        )
+        );
+
+        container.addView(card);
+    }
+
+    private void showAddSpecificAreaDialog(
+            String areaName) {
+
+        AlertDialog dialog =
+                new AlertDialog.Builder(this)
+                        .setTitle(
+                                "Add " + areaName
+                        )
+                        .setMessage(
+                                "Do you want to add "
+                                        + areaName
+                                        + " as an active TapTask service area?"
+                        )
+                        .setNegativeButton(
+                                "Cancel",
+                                null
+                        )
+                        .setPositiveButton(
+                                "Add Area",
+                                null
+                        )
+                        .create();
+
+        dialog.setOnShowListener(
+                d -> {
+
+                    Button positive =
+                            dialog.getButton(
+                                    AlertDialog.BUTTON_POSITIVE
+                            );
+
+                    if (positive != null) {
+
+                        positive.setTextColor(
+                                Color.rgb(
+                                        102,
+                                        88,
+                                        217
+                                )
+                        );
+
+                        positive.setOnClickListener(
+                                v -> {
+
+                                    saveArea(
+                                            areaName
+                                    );
+
+                                    dialog.dismiss();
+                                }
+                        );
+                    }
+                }
+        );
+
+        dialog.show();
+    }
+
+    private void showAddAreaDialog() {
+
+        final String[] options = {
+                "Tench",
+                "Saddar"
+        };
+
+        AlertDialog dialog =
+                new AlertDialog.Builder(this)
+                        .setTitle(
+                                "Add Service Area"
+                        )
+                        .setSingleChoiceItems(
+                                options,
+                                -1,
+                                null
+                        )
+                        .setNegativeButton(
+                                "Cancel",
+                                null
+                        )
+                        .setPositiveButton(
+                                "Add Area",
+                                null
+                        )
+                        .create();
+
+        dialog.setOnShowListener(
+                d -> {
+
+                    Button positive =
+                            dialog.getButton(
+                                    AlertDialog.BUTTON_POSITIVE
+                            );
+
+                    if (positive != null) {
+
+                        positive.setTextColor(
+                                Color.rgb(
+                                        102,
+                                        88,
+                                        217
+                                )
+                        );
+
+                        positive.setOnClickListener(
+                                v -> {
+
+                                    int selected =
+                                            dialog
+                                                    .getListView()
+                                                    .getCheckedItemPosition();
+
+                                    if (
+                                            selected < 0
+                                    ) {
+
+                                        Toast.makeText(
+                                                this,
+                                                "Please select an area",
+                                                Toast.LENGTH_SHORT
+                                        ).show();
+
+                                        return;
+                                    }
+
+                                    saveArea(
+                                            options[selected]
+                                    );
+
+                                    dialog.dismiss();
+                                }
+                        );
+                    }
+                }
+        );
+
+        dialog.show();
+    }
+
+    private void saveArea(
+            String areaName) {
+
+        if (
+                !areaName.equalsIgnoreCase(
+                        "Tench"
+                )
+                        &&
+                        !areaName.equalsIgnoreCase(
+                                "Saddar"
+                        )
+        ) {
+
+            Toast.makeText(
+                    this,
+                    "Only Tench and Saddar are allowed",
+                    Toast.LENGTH_SHORT
+            ).show();
+
+            return;
+        }
+
+        Map<String, Object> data =
+                new LinkedHashMap<>();
+
+        data.put(
+                "name",
+                areaName
+        );
+
+        data.put(
+                "active",
+                true
+        );
+
+        data.put(
+                "createdAt",
+                FieldValue.serverTimestamp()
+        );
+
+        db.collection("areas")
+                .document(
+                        areaName.toLowerCase(
+                                Locale.getDefault()
+                        )
+                )
+                .set(data)
+                .addOnSuccessListener(v -> {
+
+                    Toast.makeText(
+                            this,
+                            areaName
+                                    + " added successfully",
+                            Toast.LENGTH_SHORT
+                    ).show();
+
+                })
+                .addOnFailureListener(e -> {
+
+                    Toast.makeText(
+                            this,
+                            "Unable to save area",
+                            Toast.LENGTH_SHORT
+                    ).show();
+                });
+    }
+
+    private void showEditAreaDialog(
+            DocumentSnapshot document,
+            String areaName,
+            boolean active) {
+
+        String[] options = {
+                "Active",
+                "Inactive"
+        };
+
+        int selected =
+                active ? 0 : 1;
+
+        AlertDialog dialog =
+                new AlertDialog.Builder(this)
+                        .setTitle(
+                                "Manage " + areaName
+                        )
+                        .setSingleChoiceItems(
+                                options,
+                                selected,
+                                null
+                        )
+                        .setNegativeButton(
+                                "Cancel",
+                                null
+                        )
+                        .setNeutralButton(
+                                "Delete",
+                                null
+                        )
+                        .setPositiveButton(
+                                "Save",
+                                null
+                        )
+                        .create();
+
+        dialog.setOnShowListener(
+                d -> {
+
+                    Button positive =
+                            dialog.getButton(
+                                    AlertDialog.BUTTON_POSITIVE
+                            );
+
+                    Button neutral =
+                            dialog.getButton(
+                                    AlertDialog.BUTTON_NEUTRAL
+                            );
+
+                    if (positive != null) {
+
+                        positive.setTextColor(
+                                Color.rgb(
+                                        102,
+                                        88,
+                                        217
+                                )
+                        );
+
+                        positive.setOnClickListener(
+                                v -> {
+
+                                    int selectedItem =
+                                            dialog
+                                                    .getListView()
+                                                    .getCheckedItemPosition();
+
+                                    boolean newActive =
+                                            selectedItem == 0;
+
+                                    document.getReference()
+                                            .update(
+                                                    "active",
+                                                    newActive
+                                            )
+                                            .addOnSuccessListener(
+                                                    success -> {
+
+                                                        Toast.makeText(
+                                                                this,
+                                                                areaName
+                                                                        + " updated",
+                                                                Toast.LENGTH_SHORT
+                                                        ).show();
+
+                                                        dialog.dismiss();
+                                                    }
+                                            )
+                                            .addOnFailureListener(
+                                                    error -> {
+
+                                                        Toast.makeText(
+                                                                this,
+                                                                "Update failed",
+                                                                Toast.LENGTH_SHORT
+                                                        ).show();
+                                                    }
+                                            );
+                                }
+                        );
+                    }
+
+                    if (neutral != null) {
+
+                        neutral.setTextColor(
+                                Color.rgb(
+                                        190,
+                                        58,
+                                        72
+                                )
+                        );
+
+                        neutral.setOnClickListener(
+                                v -> {
+
+                                    dialog.dismiss();
+
+                                    confirmDeleteArea(
+                                            document,
+                                            areaName
+                                    );
+                                }
+                        );
+                    }
+                }
+        );
+
+        dialog.show();
+    }
+
+    private void confirmDeleteArea(
+            DocumentSnapshot document,
+            String areaName) {
+
+        AlertDialog dialog =
+                new AlertDialog.Builder(this)
+                        .setTitle(
+                                "Delete " + areaName + "?"
+                        )
+                        .setMessage(
+                                "This will remove "
+                                        + areaName
+                                        + " from the admin service area list."
+                        )
+                        .setNegativeButton(
+                                "Cancel",
+                                null
+                        )
+                        .setPositiveButton(
+                                "Delete",
+                                null
+                        )
+                        .create();
+
+        dialog.setOnShowListener(
+                d -> {
+
+                    Button positive =
+                            dialog.getButton(
+                                    AlertDialog.BUTTON_POSITIVE
+                            );
+
+                    if (positive != null) {
+
+                        positive.setTextColor(
+                                Color.rgb(
+                                        190,
+                                        58,
+                                        72
+                                )
+                        );
+
+                        positive.setOnClickListener(
+                                v -> {
+
+                                    document.getReference()
+                                            .delete()
+                                            .addOnSuccessListener(
+                                                    success -> {
+
+                                                        Toast.makeText(
+                                                                this,
+                                                                areaName
+                                                                        + " deleted",
+                                                                Toast.LENGTH_SHORT
+                                                        ).show();
+
+                                                        dialog.dismiss();
+                                                    }
+                                            )
+                                            .addOnFailureListener(
+                                                    error -> {
+
+                                                        Toast.makeText(
+                                                                this,
+                                                                "Delete failed",
+                                                                Toast.LENGTH_SHORT
+                                                        ).show();
+                                                    }
+                                            );
+                                }
+                        );
+                    }
+                }
+        );
+
+        dialog.show();
     }
 
     // =========================================================
@@ -1524,9 +2844,6 @@ public class AdminManagementActivity extends AppCompatActivity {
 
         container.addView(revenueCard);
 
-        // IMPORTANT:
-        // Firebase listeners are attached after all chart
-        // views have been created.
         listenStatistics();
     }
 
@@ -1590,7 +2907,6 @@ public class AdminManagementActivity extends AppCompatActivity {
 
         icon.setTextSize(17);
 
-        // Subtle neon-style glow.
         icon.setLayerType(
                 View.LAYER_TYPE_SOFTWARE,
                 null
@@ -1729,10 +3045,6 @@ public class AdminManagementActivity extends AppCompatActivity {
             return;
         }
 
-        // -----------------------------------------------------
-        // USERS / WORKERS
-        // -----------------------------------------------------
-
         int users =
                 statisticsUsersSnapshot == null
                         ? 0
@@ -1787,15 +3099,12 @@ public class AdminManagementActivity extends AppCompatActivity {
             );
         }
 
-        // -----------------------------------------------------
-        // BOOKINGS
-        // -----------------------------------------------------
-
         if (statisticsBookingsSnapshot != null) {
 
             updateBookingCharts(
                     statisticsBookingsSnapshot
             );
+
         } else {
 
             if (bookingsTrendChart != null) {
@@ -1834,21 +3143,23 @@ public class AdminManagementActivity extends AppCompatActivity {
         }
     }
 
+    // =========================================================
+    // BOOKING CHART DATA
+    // =========================================================
+
     private void updateBookingCharts(
             QuerySnapshot snapshot) {
 
         Map<String, Integer> bookingCounts =
-                createLastSevenDayIntegerMap();
+                new LinkedHashMap<>();
 
         Map<String, Double> revenueCounts =
-                createLastSevenDayDoubleMap();
+                new LinkedHashMap<>();
 
         int pending = 0;
         int accepted = 0;
         int completed = 0;
         int rejected = 0;
-
-        boolean hasDateData = false;
 
         for (
                 DocumentSnapshot booking :
@@ -1898,37 +3209,63 @@ public class AdminManagementActivity extends AppCompatActivity {
             Date bookingDate =
                     getBookingDate(booking);
 
-            if (bookingDate != null) {
-
-                String key =
-                        dateKey(bookingDate);
-
-                if (bookingCounts.containsKey(key)) {
-
-                    bookingCounts.put(
-                            key,
-                            bookingCounts.get(key) + 1
-                    );
-
-                    double amount =
-                            extractBookingAmount(
-                                    booking
-                            );
-
-                    revenueCounts.put(
-                            key,
-                            revenueCounts.get(key) + amount
-                    );
-
-                    hasDateData = true;
-                }
+            if (bookingDate == null) {
+                continue;
             }
+
+            String key =
+                    dateKey(bookingDate);
+
+            if (!bookingCounts.containsKey(key)) {
+
+                bookingCounts.put(
+                        key,
+                        0
+                );
+
+                revenueCounts.put(
+                        key,
+                        0.0
+                );
+            }
+
+            bookingCounts.put(
+                    key,
+                    bookingCounts.get(key) + 1
+            );
+
+            double amount =
+                    extractBookingAmount(
+                            booking
+                    );
+
+            revenueCounts.put(
+                    key,
+                    revenueCounts.get(key) + amount
+            );
         }
 
         List<String> labels =
                 new ArrayList<>(
                         bookingCounts.keySet()
                 );
+
+        Collections.sort(
+                labels,
+                (first, second) ->
+                        first.compareTo(second)
+        );
+
+        if (labels.size() > 7) {
+
+            labels =
+                    new ArrayList<>(
+                            labels.subList(
+                                    labels.size() - 7,
+                                    labels.size()
+                            )
+                    );
+        }
 
         List<Double> bookingValues =
                 new ArrayList<>();
@@ -1950,7 +3287,7 @@ public class AdminManagementActivity extends AppCompatActivity {
 
         if (bookingsTrendChart != null) {
 
-            if (hasDateData) {
+            if (!labels.isEmpty()) {
 
                 bookingsTrendChart.setData(
                         bookingValues,
@@ -1960,14 +3297,14 @@ public class AdminManagementActivity extends AppCompatActivity {
             } else {
 
                 bookingsTrendChart.setNoData(
-                        "No usable booking dates"
+                        "No booking data available"
                 );
             }
         }
 
         if (revenueTrendChart != null) {
 
-            if (hasDateData) {
+            if (!labels.isEmpty()) {
 
                 revenueTrendChart.setData(
                         revenueValues,
@@ -1977,7 +3314,7 @@ public class AdminManagementActivity extends AppCompatActivity {
             } else {
 
                 revenueTrendChart.setNoData(
-                        "No usable booking dates"
+                        "No revenue data available"
                 );
             }
         }
@@ -2004,106 +3341,6 @@ public class AdminManagementActivity extends AppCompatActivity {
     // =========================================================
     // DATE HELPERS
     // =========================================================
-
-    private Map<String, Integer>
-    createLastSevenDayIntegerMap() {
-
-        Map<String, Integer> map =
-                new LinkedHashMap<>();
-
-        Calendar calendar =
-                Calendar.getInstance();
-
-        calendar.set(
-                Calendar.HOUR_OF_DAY,
-                0
-        );
-
-        calendar.set(
-                Calendar.MINUTE,
-                0
-        );
-
-        calendar.set(
-                Calendar.SECOND,
-                0
-        );
-
-        calendar.set(
-                Calendar.MILLISECOND,
-                0
-        );
-
-        calendar.add(
-                Calendar.DAY_OF_YEAR,
-                -6
-        );
-
-        for (int i = 0; i < 7; i++) {
-
-            map.put(
-                    dateKey(calendar.getTime()),
-                    0
-            );
-
-            calendar.add(
-                    Calendar.DAY_OF_YEAR,
-                    1
-            );
-        }
-
-        return map;
-    }
-
-    private Map<String, Double>
-    createLastSevenDayDoubleMap() {
-
-        Map<String, Double> map =
-                new LinkedHashMap<>();
-
-        Calendar calendar =
-                Calendar.getInstance();
-
-        calendar.set(
-                Calendar.HOUR_OF_DAY,
-                0
-        );
-
-        calendar.set(
-                Calendar.MINUTE,
-                0
-        );
-
-        calendar.set(
-                Calendar.SECOND,
-                0
-        );
-
-        calendar.set(
-                Calendar.MILLISECOND,
-                0
-        );
-
-        calendar.add(
-                Calendar.DAY_OF_YEAR,
-                -6
-        );
-
-        for (int i = 0; i < 7; i++) {
-
-            map.put(
-                    dateKey(calendar.getTime()),
-                    0.0
-            );
-
-            calendar.add(
-                    Calendar.DAY_OF_YEAR,
-                    1
-            );
-        }
-
-        return map;
-    }
 
     private String dateKey(Date date) {
 
@@ -2161,11 +3398,10 @@ public class AdminManagementActivity extends AppCompatActivity {
     private Date getBookingDate(
             DocumentSnapshot booking) {
 
-        Object value =
-                booking.get("date");
-
         Date date =
-                convertToDate(value);
+                convertToDate(
+                        booking.get("date")
+                );
 
         if (date != null) {
             return date;
@@ -2189,12 +3425,9 @@ public class AdminManagementActivity extends AppCompatActivity {
             return date;
         }
 
-        date =
-                convertToDate(
-                        booking.get("createdAt")
-                );
-
-        return date;
+        return convertToDate(
+                booking.get("createdAt")
+        );
     }
 
     private Date convertToDate(
@@ -2214,23 +3447,92 @@ public class AdminManagementActivity extends AppCompatActivity {
             return (Date) value;
         }
 
+        if (value instanceof Number) {
+
+            long number =
+                    ((Number) value).longValue();
+
+            if (number > 100000000000L) {
+
+                return new Date(number);
+            }
+
+            if (number > 1000000000L) {
+
+                return new Date(
+                        number * 1000L
+                );
+            }
+        }
+
         String text =
-                String.valueOf(value).trim();
+                String.valueOf(value)
+                        .trim();
 
         if (text.isEmpty()) {
             return null;
         }
 
+        String normalized =
+                text.replace(
+                        "T",
+                        " "
+                );
+
+        if (normalized.endsWith("Z")) {
+
+            normalized =
+                    normalized.substring(
+                            0,
+                            normalized.length() - 1
+                    );
+        }
+
         String[] formats = {
 
-                "dd/MM/yyyy",
-                "dd-MM-yyyy",
                 "yyyy-MM-dd",
+                "yyyy-MM-dd HH:mm",
+                "yyyy-MM-dd HH:mm:ss",
+                "yyyy-MM-dd'T'HH:mm:ss",
+                "dd/MM/yyyy",
+                "dd/MM/yyyy HH:mm",
+                "dd-MM-yyyy",
+                "dd-MM-yyyy HH:mm",
                 "MM/dd/yyyy",
+                "MM-dd-yyyy",
+                "dd.MM.yyyy",
+                "yyyy/MM/dd",
                 "dd MMM yyyy",
+                "dd MMMM yyyy",
                 "MMM dd, yyyy",
-                "MMMM dd, yyyy"
+                "MMMM dd, yyyy",
+                "MMM dd yyyy",
+                "MMMM dd yyyy"
         };
+
+        for (String format : formats) {
+
+            try {
+
+                SimpleDateFormat sdf =
+                        new SimpleDateFormat(
+                                format,
+                                Locale.ENGLISH
+                        );
+
+                sdf.setLenient(false);
+
+                Date parsed =
+                        sdf.parse(normalized);
+
+                if (parsed != null) {
+
+                    return parsed;
+                }
+
+            } catch (ParseException ignored) {
+            }
+        }
 
         for (String format : formats) {
 
@@ -2248,6 +3550,7 @@ public class AdminManagementActivity extends AppCompatActivity {
                         sdf.parse(text);
 
                 if (parsed != null) {
+
                     return parsed;
                 }
 
@@ -2557,7 +3860,7 @@ public class AdminManagementActivity extends AppCompatActivity {
     }
 
     // =========================================================
-    // AREA / POLYGON CHART
+    // AREA CHART
     // =========================================================
 
     private class AreaChartView extends View {
@@ -2679,7 +3982,6 @@ public class AdminManagementActivity extends AppCompatActivity {
                 }
             }
 
-            // Grid
             paint.setStyle(
                     Paint.Style.STROKE
             );
@@ -2771,7 +4073,6 @@ public class AdminManagementActivity extends AppCompatActivity {
 
             area.close();
 
-            // Filled polygon area
             paint.setStyle(
                     Paint.Style.FILL
             );
@@ -2788,7 +4089,6 @@ public class AdminManagementActivity extends AppCompatActivity {
                     paint
             );
 
-            // Main line
             paint.setStyle(
                     Paint.Style.STROKE
             );
@@ -2806,7 +4106,6 @@ public class AdminManagementActivity extends AppCompatActivity {
                     paint
             );
 
-            // Points + values
             for (
                     int i = 0;
                     i < values.size();
@@ -3789,6 +5088,14 @@ public class AdminManagementActivity extends AppCompatActivity {
 
         if (bookingsListener != null) {
             bookingsListener.remove();
+        }
+
+        if (areasListener != null) {
+            areasListener.remove();
+        }
+
+        if (feedbackListener != null) {
+            feedbackListener.remove();
         }
 
         clearStatisticsListeners();

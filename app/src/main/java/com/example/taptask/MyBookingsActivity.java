@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.LinearLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -18,41 +19,171 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.Query;
 
 import java.util.Map;
 
 public class MyBookingsActivity extends AppCompatActivity {
 
-    private TextView btnBack;
-    private LinearLayout bookingsContainer;
-
-    private FirebaseAuth firebaseAuth;
+    private FirebaseAuth auth;
     private FirebaseFirestore firestore;
+
+    private LinearLayout bookingsContainer;
+    private TextView tvEmpty;
+
+    private final int PRIMARY = Color.parseColor("#6C63FF");
+    private final int BLUE = Color.parseColor("#2563EB");
+    private final int GREEN = Color.parseColor("#16A34A");
+    private final int ORANGE = Color.parseColor("#F59E0B");
+    private final int RED = Color.parseColor("#DC2626");
+    private final int TEXT = Color.parseColor("#1F2937");
+    private final int MUTED = Color.parseColor("#6B7280");
+    private final int BG = Color.parseColor("#F5F7FF");
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        setContentView(R.layout.activity_my_bookings);
-
-        firebaseAuth = FirebaseAuth.getInstance();
+        auth = FirebaseAuth.getInstance();
         firestore = FirebaseFirestore.getInstance();
 
-        btnBack = findViewById(R.id.btnBack);
-        bookingsContainer = findViewById(R.id.bookingsContainer);
+        createUI();
+        loadBookings();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        if (auth != null && bookingsContainer != null) {
+            loadBookings();
+        }
+    }
+
+    private void createUI() {
+
+        LinearLayout root = new LinearLayout(this);
+        root.setOrientation(LinearLayout.VERTICAL);
+        root.setBackgroundColor(BG);
+
+        // =========================
+        // HEADER
+        // =========================
+
+        LinearLayout header = new LinearLayout(this);
+        header.setOrientation(LinearLayout.HORIZONTAL);
+        header.setGravity(Gravity.CENTER_VERTICAL);
+        header.setPadding(20, 18, 20, 18);
+
+        GradientDrawable headerBg = new GradientDrawable(
+                GradientDrawable.Orientation.TL_BR,
+                new int[]{
+                        Color.parseColor("#7C3AED"),
+                        Color.parseColor("#4F46E5"),
+                        Color.parseColor("#2563EB")
+                }
+        );
+
+        headerBg.setCornerRadii(new float[]{
+                0, 0,
+                0, 0,
+                22, 22,
+                22, 22
+        });
+
+        header.setBackground(headerBg);
+
+        TextView btnBack = new TextView(this);
+        btnBack.setText("‹");
+        btnBack.setTextColor(Color.WHITE);
+        btnBack.setTextSize(36);
+        btnBack.setGravity(Gravity.CENTER);
+        btnBack.setTypeface(Typeface.DEFAULT, Typeface.BOLD);
+        btnBack.setPadding(0, 0, 12, 0);
 
         btnBack.setOnClickListener(v -> finish());
 
-        loadMyBookings();
+        header.addView(
+                btnBack,
+                new LinearLayout.LayoutParams(50, 55)
+        );
+
+        LinearLayout titleBox = new LinearLayout(this);
+        titleBox.setOrientation(LinearLayout.VERTICAL);
+
+        TextView title = new TextView(this);
+        title.setText("My Bookings");
+        title.setTextColor(Color.WHITE);
+        title.setTextSize(23);
+        title.setTypeface(Typeface.DEFAULT, Typeface.BOLD);
+
+        TextView subtitle = new TextView(this);
+        subtitle.setText("Manage your service bookings");
+        subtitle.setTextColor(Color.parseColor("#E0E7FF"));
+        subtitle.setTextSize(13);
+
+        titleBox.addView(title);
+        titleBox.addView(subtitle);
+
+        header.addView(
+                titleBox,
+                new LinearLayout.LayoutParams(
+                        0,
+                        ViewGroup.LayoutParams.WRAP_CONTENT,
+                        1
+                )
+        );
+
+        root.addView(header);
+
+        // =========================
+        // EMPTY MESSAGE
+        // =========================
+
+        tvEmpty = new TextView(this);
+        tvEmpty.setText("No bookings found");
+        tvEmpty.setTextColor(MUTED);
+        tvEmpty.setTextSize(16);
+        tvEmpty.setGravity(Gravity.CENTER);
+        tvEmpty.setPadding(20, 40, 20, 20);
+        tvEmpty.setVisibility(View.GONE);
+
+        root.addView(
+                tvEmpty,
+                new LinearLayout.LayoutParams(
+                        ViewGroup.LayoutParams.MATCH_PARENT,
+                        ViewGroup.LayoutParams.WRAP_CONTENT
+                )
+        );
+
+        // =========================
+        // BOOKINGS
+        // =========================
+
+        bookingsContainer = new LinearLayout(this);
+        bookingsContainer.setOrientation(LinearLayout.VERTICAL);
+        bookingsContainer.setPadding(16, 18, 16, 30);
+
+        ScrollView scrollView = new ScrollView(this);
+        scrollView.setFillViewport(true);
+        scrollView.addView(bookingsContainer);
+
+        root.addView(
+                scrollView,
+                new LinearLayout.LayoutParams(
+                        ViewGroup.LayoutParams.MATCH_PARENT,
+                        0,
+                        1
+                )
+        );
+
+        setContentView(root);
     }
 
-    private void loadMyBookings() {
+    private void loadBookings() {
 
-        FirebaseUser currentUser =
-                firebaseAuth.getCurrentUser();
+        FirebaseUser user = auth.getCurrentUser();
 
-        if (currentUser == null) {
+        if (user == null) {
 
             Toast.makeText(
                     this,
@@ -63,14 +194,8 @@ public class MyBookingsActivity extends AppCompatActivity {
             return;
         }
 
-        String customerId =
-                currentUser.getUid();
-
         firestore.collection("bookings")
-                .whereEqualTo(
-                        "customerId",
-                        customerId
-                )
+                .whereEqualTo("customerId", user.getUid())
                 .get()
                 .addOnSuccessListener(queryDocumentSnapshots -> {
 
@@ -78,115 +203,107 @@ public class MyBookingsActivity extends AppCompatActivity {
 
                     if (queryDocumentSnapshots.isEmpty()) {
 
-                        TextView emptyText =
-                                new TextView(this);
-
-                        emptyText.setText(
-                                "No bookings yet"
-                        );
-
-                        emptyText.setTextSize(16);
-
-                        emptyText.setTextColor(
-                                Color.GRAY
-                        );
-
-                        emptyText.setGravity(
-                                Gravity.CENTER
-                        );
-
-                        emptyText.setPadding(
-                                20,
-                                80,
-                                20,
-                                20
-                        );
-
-                        bookingsContainer.addView(
-                                emptyText
-                        );
-
+                        tvEmpty.setVisibility(View.VISIBLE);
                         return;
                     }
 
-                    queryDocumentSnapshots.forEach(
-                            documentSnapshot -> {
+                    tvEmpty.setVisibility(View.GONE);
 
-                                Map<String, Object> booking =
-                                        documentSnapshot.getData();
+                    for (com.google.firebase.firestore.DocumentSnapshot doc
+                            : queryDocumentSnapshots.getDocuments()) {
 
-                                String bookingId =
-                                        documentSnapshot.getId();
+                        Map<String, Object> data = doc.getData();
 
-                                String workerName =
-                                        getStringValue(
-                                                booking,
-                                                "workerName"
-                                        );
+                        if (data == null) {
+                            continue;
+                        }
 
-                                String serviceTitle =
-                                        getStringValue(
-                                                booking,
-                                                "serviceTitle"
-                                        );
+                        String bookingId = doc.getId();
 
-                                String workerRate =
-                                        getStringValue(
-                                                booking,
-                                                "workerRate"
-                                        );
-
-                                String date =
-                                        getStringValue(
-                                                booking,
-                                                "date"
-                                        );
-
-                                String time =
-                                        getStringValue(
-                                                booking,
-                                                "time"
-                                        );
-
-                                String address =
-                                        getStringValue(
-                                                booking,
-                                                "address"
-                                        );
-
-                                String paymentMethod =
-                                        getStringValue(
-                                                booking,
-                                                "paymentMethod"
-                                        );
-
-                                String status =
-                                        getStringValue(
-                                                booking,
-                                                "status"
-                                        );
-
-                                addBookingCard(
-                                        bookingId,
-                                        workerName,
-                                        serviceTitle,
-                                        workerRate,
-                                        date,
-                                        time,
-                                        address,
-                                        paymentMethod,
-                                        status
+                        String workerName =
+                                getStringValue(
+                                        data,
+                                        "workerName",
+                                        "Worker"
                                 );
-                            }
-                    );
+
+                        String serviceTitle =
+                                getStringValue(
+                                        data,
+                                        "serviceTitle",
+                                        "Service"
+                                );
+
+                        String workerRate =
+                                getStringValue(
+                                        data,
+                                        "workerRate",
+                                        "Rs. 0"
+                                );
+
+                        String date =
+                                getStringValue(
+                                        data,
+                                        "date",
+                                        "Not specified"
+                                );
+
+                        String time =
+                                getStringValue(
+                                        data,
+                                        "time",
+                                        "Not specified"
+                                );
+
+                        String address =
+                                getStringValue(
+                                        data,
+                                        "address",
+                                        "Not specified"
+                                );
+
+                        String paymentMethod =
+                                getStringValue(
+                                        data,
+                                        "paymentMethod",
+                                        "Cash"
+                                );
+
+                        String status =
+                                getStringValue(
+                                        data,
+                                        "status",
+                                        "Pending"
+                                );
+
+                        String paymentStatus =
+                                getStringValue(
+                                        data,
+                                        "paymentStatus",
+                                        "Pending"
+                                );
+
+                        addBookingCard(
+                                bookingId,
+                                workerName,
+                                serviceTitle,
+                                workerRate,
+                                date,
+                                time,
+                                address,
+                                paymentMethod,
+                                status,
+                                paymentStatus
+                        );
+                    }
+
                 })
                 .addOnFailureListener(e -> {
 
                     Toast.makeText(
                             this,
-                            "Failed to load bookings: "
-                                    + e.getMessage(),
-                            Toast.LENGTH_LONG
+                            "Failed to load bookings",
+                            Toast.LENGTH_SHORT
                     ).show();
                 });
     }
@@ -200,47 +317,23 @@ public class MyBookingsActivity extends AppCompatActivity {
             String time,
             String address,
             String paymentMethod,
-            String status) {
+            String status,
+            String paymentStatus
+    ) {
 
-        // =========================
-        // MAIN CARD
-        // =========================
+        LinearLayout card = new LinearLayout(this);
+        card.setOrientation(LinearLayout.VERTICAL);
+        card.setPadding(18, 18, 18, 18);
 
-        LinearLayout card =
-                new LinearLayout(this);
-
-        card.setOrientation(
-                LinearLayout.VERTICAL
-        );
-
-        card.setPadding(
-                20,
-                20,
-                20,
-                20
-        );
-
-        GradientDrawable cardBackground =
-                new GradientDrawable();
-
-        cardBackground.setColor(
-                Color.WHITE
-        );
-
-        cardBackground.setCornerRadius(
-                24
-        );
-
-        cardBackground.setStroke(
+        GradientDrawable cardBg = new GradientDrawable();
+        cardBg.setColor(Color.WHITE);
+        cardBg.setCornerRadius(22);
+        cardBg.setStroke(
                 1,
-                Color.rgb(225, 229, 238)
+                Color.parseColor("#E0E7FF")
         );
 
-        card.setBackground(
-                cardBackground
-        );
-
-        card.setElevation(5);
+        card.setBackground(cardBg);
 
         LinearLayout.LayoutParams cardParams =
                 new LinearLayout.LayoutParams(
@@ -248,30 +341,73 @@ public class MyBookingsActivity extends AppCompatActivity {
                         ViewGroup.LayoutParams.WRAP_CONTENT
                 );
 
-        cardParams.setMargins(
-                0,
-                0,
-                0,
-                18
-        );
-
-        card.setLayoutParams(
-                cardParams
-        );
+        cardParams.setMargins(0, 0, 0, 18);
+        card.setLayoutParams(cardParams);
 
         // =========================
-        // TOP ROW
+        // WORKER + SERVICE
         // =========================
 
-        LinearLayout topRow =
+        LinearLayout workerRow =
                 new LinearLayout(this);
 
-        topRow.setOrientation(
+        workerRow.setOrientation(
                 LinearLayout.HORIZONTAL
         );
 
-        topRow.setGravity(
+        workerRow.setGravity(
                 Gravity.CENTER_VERTICAL
+        );
+
+        TextView avatar =
+                new TextView(this);
+
+        avatar.setText(
+                workerName.isEmpty()
+                        ? "W"
+                        : workerName
+                        .substring(0, 1)
+                        .toUpperCase()
+        );
+
+        avatar.setTextColor(
+                Color.WHITE
+        );
+
+        avatar.setTextSize(18);
+
+        avatar.setTypeface(
+                Typeface.DEFAULT,
+                Typeface.BOLD
+        );
+
+        avatar.setGravity(
+                Gravity.CENTER
+        );
+
+        GradientDrawable avatarBg =
+                new GradientDrawable(
+                        GradientDrawable.Orientation.TL_BR,
+                        new int[]{
+                                PRIMARY,
+                                Color.parseColor("#8B5CF6")
+                        }
+                );
+
+        avatarBg.setShape(
+                GradientDrawable.OVAL
+        );
+
+        avatar.setBackground(
+                avatarBg
+        );
+
+        workerRow.addView(
+                avatar,
+                new LinearLayout.LayoutParams(
+                        48,
+                        48
+                )
         );
 
         LinearLayout workerInfo =
@@ -281,155 +417,63 @@ public class MyBookingsActivity extends AppCompatActivity {
                 LinearLayout.VERTICAL
         );
 
-        LinearLayout.LayoutParams workerInfoParams =
+        workerInfo.setPadding(
+                12,
+                0,
+                8,
+                0
+        );
+
+        TextView tvWorker =
+                new TextView(this);
+
+        tvWorker.setText(
+                workerName
+        );
+
+        tvWorker.setTextSize(18);
+
+        tvWorker.setTextColor(
+                TEXT
+        );
+
+        tvWorker.setTypeface(
+                Typeface.DEFAULT,
+                Typeface.BOLD
+        );
+
+        TextView tvService =
+                new TextView(this);
+
+        tvService.setText(
+                serviceTitle
+        );
+
+        tvService.setTextSize(13);
+
+        tvService.setTextColor(
+                PRIMARY
+        );
+
+        workerInfo.addView(
+                tvWorker
+        );
+
+        workerInfo.addView(
+                tvService
+        );
+
+        workerRow.addView(
+                workerInfo,
                 new LinearLayout.LayoutParams(
                         0,
                         ViewGroup.LayoutParams.WRAP_CONTENT,
                         1
-                );
-
-        workerInfo.setLayoutParams(
-                workerInfoParams
-        );
-
-        TextView workerText =
-                new TextView(this);
-
-        workerText.setText(
-                workerName
-        );
-
-        workerText.setTextSize(18);
-
-        workerText.setTextColor(
-                Color.rgb(30, 41, 59)
-        );
-
-        workerText.setTypeface(
-                null,
-                Typeface.BOLD
-        );
-
-        TextView serviceText =
-                new TextView(this);
-
-        serviceText.setText(
-                serviceTitle
-        );
-
-        serviceText.setTextSize(13);
-
-        serviceText.setTextColor(
-                Color.rgb(79, 70, 229)
-        );
-
-        serviceText.setPadding(
-                0,
-                4,
-                0,
-                0
-        );
-
-        workerInfo.addView(
-                workerText
-        );
-
-        workerInfo.addView(
-                serviceText
-        );
-
-        // =========================
-        // STATUS BADGE
-        // =========================
-
-        TextView statusBadge =
-                new TextView(this);
-
-        statusBadge.setText(
-                status
-        );
-
-        statusBadge.setTextSize(12);
-
-        statusBadge.setTypeface(
-                null,
-                Typeface.BOLD
-        );
-
-        statusBadge.setGravity(
-                Gravity.CENTER
-        );
-
-        statusBadge.setPadding(
-                14,
-                7,
-                14,
-                7
-        );
-
-        GradientDrawable statusBackground =
-                new GradientDrawable();
-
-        statusBackground.setCornerRadius(
-                30
-        );
-
-        if ("Completed".equalsIgnoreCase(status)) {
-
-            statusBadge.setTextColor(
-                    Color.rgb(22, 101, 52)
-            );
-
-            statusBackground.setColor(
-                    Color.rgb(220, 252, 231)
-            );
-
-        } else if ("Accepted".equalsIgnoreCase(status)
-                || "Confirmed".equalsIgnoreCase(status)) {
-
-            statusBadge.setTextColor(
-                    Color.rgb(30, 64, 175)
-            );
-
-            statusBackground.setColor(
-                    Color.rgb(219, 234, 254)
-            );
-
-        } else if ("Rejected".equalsIgnoreCase(status)) {
-
-            statusBadge.setTextColor(
-                    Color.rgb(185, 28, 28)
-            );
-
-            statusBackground.setColor(
-                    Color.rgb(254, 226, 226)
-            );
-
-        } else {
-
-            statusBadge.setTextColor(
-                    Color.rgb(146, 64, 14)
-            );
-
-            statusBackground.setColor(
-                    Color.rgb(255, 237, 213)
-            );
-        }
-
-        statusBadge.setBackground(
-                statusBackground
-        );
-
-        topRow.addView(
-                workerInfo
-        );
-
-        topRow.addView(
-                statusBadge
+                )
         );
 
         card.addView(
-                topRow
+                workerRow
         );
 
         // =========================
@@ -439,6 +483,10 @@ public class MyBookingsActivity extends AppCompatActivity {
         View divider =
                 new View(this);
 
+        divider.setBackgroundColor(
+                Color.parseColor("#EEF2FF")
+        );
+
         LinearLayout.LayoutParams dividerParams =
                 new LinearLayout.LayoutParams(
                         ViewGroup.LayoutParams.MATCH_PARENT,
@@ -447,158 +495,309 @@ public class MyBookingsActivity extends AppCompatActivity {
 
         dividerParams.setMargins(
                 0,
-                16,
+                14,
                 0,
-                14
-        );
-
-        divider.setLayoutParams(
-                dividerParams
-        );
-
-        divider.setBackgroundColor(
-                Color.rgb(235, 238, 245)
+                10
         );
 
         card.addView(
-                divider
+                divider,
+                dividerParams
         );
 
         // =========================
-        // BOOKING INFORMATION
+        // INFO
         // =========================
 
-        TextView rateText =
+        card.addView(
                 createInfoText(
-                        "💰  Rate: " + workerRate,
-                        true
-                );
-
-        TextView dateText =
-                createInfoText(
-                        "📅  Date: " + date,
-                        false
-                );
-
-        TextView timeText =
-                createInfoText(
-                        "🕐  Time: " + time,
-                        false
-                );
-
-        TextView addressText =
-                createInfoText(
-                        "📍  " + address,
-                        false
-                );
-
-        String paymentDisplay =
-                paymentMethod;
-
-        if ("cash".equalsIgnoreCase(
-                paymentMethod)) {
-
-            paymentDisplay =
-                    "Cash on Delivery";
-
-        } else if ("stripe".equalsIgnoreCase(
-                paymentMethod)) {
-
-            paymentDisplay =
-                    "Stripe";
-        }
-
-        TextView paymentText =
-                createInfoText(
-                        "💳  Payment: "
-                                + paymentDisplay,
-                        false
-                );
-
-        card.addView(rateText);
-        card.addView(dateText);
-        card.addView(timeText);
-        card.addView(addressText);
-        card.addView(paymentText);
-
-        // =========================
-        // BUTTON CONTAINER
-        // =========================
-
-        LinearLayout buttonRow =
-                new LinearLayout(this);
-
-        buttonRow.setOrientation(
-                LinearLayout.VERTICAL
+                        "💰  Rate: " + workerRate
+                )
         );
 
-        LinearLayout.LayoutParams buttonRowParams =
-                new LinearLayout.LayoutParams(
-                        ViewGroup.LayoutParams.MATCH_PARENT,
-                        ViewGroup.LayoutParams.WRAP_CONTENT
+        card.addView(
+                createInfoText(
+                        "📅  Date: " + date
+                )
+        );
+
+        card.addView(
+                createInfoText(
+                        "🕐  Time: " + time
+                )
+        );
+
+        card.addView(
+                createInfoText(
+                        "📍  Address: " + address
+                )
+        );
+
+        card.addView(
+                createInfoText(
+                        "💳  Payment: " + paymentMethod
+                )
+        );
+
+        // =========================
+        // STATUS
+        // =========================
+
+        boolean isCompleted =
+                status.equalsIgnoreCase(
+                        "Completed"
                 );
 
-        buttonRowParams.setMargins(
-                0,
+        boolean isAccepted =
+                status.equalsIgnoreCase(
+                        "Accepted"
+                );
+
+        boolean isPending =
+                status.equalsIgnoreCase(
+                        "Pending"
+                );
+
+        boolean isRejected =
+                status.equalsIgnoreCase(
+                        "Rejected"
+                )
+                        ||
+                        status.equalsIgnoreCase(
+                                "Cancelled"
+                        );
+
+        boolean isPaid =
+                paymentStatus.equalsIgnoreCase(
+                        "Paid"
+                );
+
+        TextView statusBadge =
+                new TextView(this);
+
+        statusBadge.setText(
+                "●  " + status
+        );
+
+        statusBadge.setTextSize(13);
+
+        statusBadge.setTypeface(
+                Typeface.DEFAULT,
+                Typeface.BOLD
+        );
+
+        statusBadge.setGravity(
+                Gravity.CENTER
+        );
+
+        statusBadge.setPadding(
                 14,
-                0,
-                0
+                8,
+                14,
+                8
         );
 
-        buttonRow.setLayoutParams(
-                buttonRowParams
-        );
-
-        // =========================
-        // CHAT BUTTON
-        // =========================
-
-        Button chatButton =
-                new Button(this);
-
-        chatButton.setText(
-                "💬  Chat with Worker"
-        );
-
-        chatButton.setTextSize(14);
-
-        chatButton.setTextColor(
-                Color.rgb(79, 70, 229)
-        );
-
-        chatButton.setAllCaps(false);
-
-        GradientDrawable chatBackground =
+        GradientDrawable statusBg =
                 new GradientDrawable();
 
-        chatBackground.setColor(
-                Color.rgb(238, 242, 255)
+        if (isCompleted) {
+
+            statusBadge.setTextColor(
+                    GREEN
+            );
+
+            statusBg.setColor(
+                    Color.parseColor("#DCFCE7")
+            );
+
+        } else if (isAccepted) {
+
+            statusBadge.setTextColor(
+                    BLUE
+            );
+
+            statusBg.setColor(
+                    Color.parseColor("#DBEAFE")
+            );
+
+        } else if (isRejected) {
+
+            statusBadge.setTextColor(
+                    RED
+            );
+
+            statusBg.setColor(
+                    Color.parseColor("#FEE2E2")
+            );
+
+        } else if (isPending) {
+
+            statusBadge.setTextColor(
+                    ORANGE
+            );
+
+            statusBg.setColor(
+                    Color.parseColor("#FFF7ED")
+            );
+
+        } else {
+
+            statusBadge.setTextColor(
+                    MUTED
+            );
+
+            statusBg.setColor(
+                    Color.parseColor("#F3F4F6")
+            );
+        }
+
+        statusBg.setCornerRadius(
+                30
         );
 
-        chatBackground.setCornerRadius(
-                40
+        statusBadge.setBackground(
+                statusBg
         );
 
-        chatBackground.setStroke(
-                1,
-                Color.rgb(199, 210, 254)
-        );
-
-        chatButton.setBackground(
-                chatBackground
-        );
-
-        LinearLayout.LayoutParams chatParams =
+        LinearLayout.LayoutParams statusParams =
                 new LinearLayout.LayoutParams(
-                        ViewGroup.LayoutParams.MATCH_PARENT,
+                        ViewGroup.LayoutParams.WRAP_CONTENT,
                         ViewGroup.LayoutParams.WRAP_CONTENT
                 );
 
-        chatButton.setLayoutParams(
-                chatParams
+        statusParams.setMargins(
+                0,
+                10,
+                0,
+                4
         );
 
+        card.addView(
+                statusBadge,
+                statusParams
+        );
+
+        // =========================
+        // PAYMENT STATUS
+        // =========================
+
+        TextView paymentBadge =
+                new TextView(this);
+
+        paymentBadge.setText(
+                isPaid
+                        ? "✓  Payment Paid"
+                        : "○  Payment Pending"
+        );
+
+        paymentBadge.setTextSize(12);
+
+        paymentBadge.setTypeface(
+                Typeface.DEFAULT,
+                Typeface.BOLD
+        );
+
+        paymentBadge.setGravity(
+                Gravity.CENTER
+        );
+
+        paymentBadge.setPadding(
+                12,
+                7,
+                12,
+                7
+        );
+
+        GradientDrawable paymentBg =
+                new GradientDrawable();
+
+        if (isPaid) {
+
+            paymentBadge.setTextColor(
+                    GREEN
+            );
+
+            paymentBg.setColor(
+                    Color.parseColor("#ECFDF5")
+            );
+
+        } else {
+
+            paymentBadge.setTextColor(
+                    ORANGE
+            );
+
+            paymentBg.setColor(
+                    Color.parseColor("#FFF7ED")
+            );
+        }
+
+        paymentBg.setCornerRadius(
+                30
+        );
+
+        paymentBadge.setBackground(
+                paymentBg
+        );
+
+        LinearLayout.LayoutParams paymentParams =
+                new LinearLayout.LayoutParams(
+                        ViewGroup.LayoutParams.WRAP_CONTENT,
+                        ViewGroup.LayoutParams.WRAP_CONTENT
+                );
+
+        paymentParams.setMargins(
+                0,
+                4,
+                0,
+                10
+        );
+
+        card.addView(
+                paymentBadge,
+                paymentParams
+        );
+
+        // =========================
+        // TOP BUTTONS
+        // =========================
+
+        LinearLayout buttonsRow =
+                new LinearLayout(this);
+
+        buttonsRow.setOrientation(
+                LinearLayout.HORIZONTAL
+        );
+
+        buttonsRow.setGravity(
+                Gravity.CENTER_VERTICAL
+        );
+
+        // =====================================================
+        // CHAT
+        // =====================================================
+
+        Button chatButton =
+                createColoredButton(
+                        "Chat",
+                        BLUE
+                );
+
         chatButton.setOnClickListener(v -> {
+
+            FirebaseUser currentUser =
+                    auth.getCurrentUser();
+
+            if (currentUser == null) {
+
+                Toast.makeText(
+                        MyBookingsActivity.this,
+                        "Please login first",
+                        Toast.LENGTH_SHORT
+                ).show();
+
+                return;
+            }
 
             Intent intent =
                     new Intent(
@@ -606,266 +805,334 @@ public class MyBookingsActivity extends AppCompatActivity {
                             ChatActivity.class
                     );
 
+            // Worker information
             intent.putExtra(
                     ChatActivity.EXTRA_WORKER_NAME,
                     workerName
             );
 
+            // Customer information
+            intent.putExtra(
+                    ChatActivity.EXTRA_CUSTOMER_NAME,
+                    getCurrentCustomerName()
+            );
+
+            intent.putExtra(
+                    ChatActivity.EXTRA_CUSTOMER_ID,
+                    currentUser.getUid()
+            );
+
+            // IMPORTANT:
+            // This is CUSTOMER side.
+            intent.putExtra(
+                    ChatActivity.EXTRA_IS_WORKER,
+                    false
+            );
+
+            // Keep booking ID for future booking-specific chat use.
+            intent.putExtra(
+                    "bookingId",
+                    bookingId
+            );
+
             startActivity(intent);
         });
 
-        buttonRow.addView(
-                chatButton
+        buttonsRow.addView(
+                chatButton,
+                createButtonParams()
         );
 
         // =========================
-        // COMPLETED BOOKING BUTTONS
+        // PAY NOW
+        // ONLY COMPLETED + NOT PAID
         // =========================
 
-        if ("Completed".equalsIgnoreCase(status)) {
+        if (isCompleted && !isPaid) {
 
-            // -------------------------
-            // VIEW INVOICE
-            // -------------------------
-
-            Button invoiceButton =
-                    new Button(this);
-
-            invoiceButton.setText(
-                    "🧾  View Invoice"
-            );
-
-            invoiceButton.setTextSize(14);
-
-            invoiceButton.setTextColor(
-                    Color.rgb(51, 65, 85)
-            );
-
-            invoiceButton.setAllCaps(false);
-
-            GradientDrawable invoiceBackground =
-                    new GradientDrawable();
-
-            invoiceBackground.setColor(
-                    Color.rgb(248, 250, 252)
-            );
-
-            invoiceBackground.setCornerRadius(
-                    40
-            );
-
-            invoiceBackground.setStroke(
-                    1,
-                    Color.rgb(203, 213, 225)
-            );
-
-            invoiceButton.setBackground(
-                    invoiceBackground
-            );
-
-            LinearLayout.LayoutParams invoiceParams =
-                    new LinearLayout.LayoutParams(
-                            ViewGroup.LayoutParams.MATCH_PARENT,
-                            ViewGroup.LayoutParams.WRAP_CONTENT
+            Button payButton =
+                    createColoredButton(
+                            "Pay Now",
+                            GREEN
                     );
 
-            invoiceParams.setMargins(
-                    0,
-                    8,
-                    0,
-                    0
-            );
-
-            invoiceButton.setLayoutParams(
-                    invoiceParams
-            );
-
-            invoiceButton.setOnClickListener(v -> {
+            payButton.setOnClickListener(v -> {
 
                 Intent intent =
                         new Intent(
                                 MyBookingsActivity.this,
-                                InvoiceActivity.class
+                                PaymentActivity.class
                         );
 
                 intent.putExtra(
-                        InvoiceActivity.EXTRA_BOOKING_ID,
+                        PaymentActivity.EXTRA_BOOKING_ID,
                         bookingId
                 );
 
                 intent.putExtra(
-                        InvoiceActivity.EXTRA_WORKER_NAME,
-                        workerName
-                );
-
-                intent.putExtra(
-                        InvoiceActivity.EXTRA_SERVICE,
-                        serviceTitle
-                );
-
-                intent.putExtra(
-                        InvoiceActivity.EXTRA_RATE,
-                        workerRate
+                        PaymentActivity.EXTRA_PAYMENT_METHOD,
+                        paymentMethod
                 );
 
                 startActivity(intent);
             });
 
-            buttonRow.addView(
-                    invoiceButton
+            buttonsRow.addView(
+                    payButton,
+                    createButtonParams()
+            );
+        }
+
+        card.addView(
+                buttonsRow
+        );
+
+        // =========================
+        // COMPLETED BUTTONS
+        // =========================
+
+        if (isCompleted) {
+
+            LinearLayout completedRow =
+                    new LinearLayout(this);
+
+            completedRow.setOrientation(
+                    LinearLayout.HORIZONTAL
             );
 
-            // -------------------------
-            // RATE & REVIEW
-            // -------------------------
-
-            Button rateButton =
-                    new Button(this);
-
-            rateButton.setText(
-                    "⭐  Rate & Review"
-            );
-
-            rateButton.setTextSize(14);
-
-            rateButton.setTextColor(
-                    Color.rgb(79, 70, 229)
-            );
-
-            rateButton.setAllCaps(false);
-
-            GradientDrawable rateBackground =
-                    new GradientDrawable();
-
-            rateBackground.setColor(
-                    Color.rgb(245, 243, 255)
-            );
-
-            rateBackground.setCornerRadius(
-                    40
-            );
-
-            rateBackground.setStroke(
-                    1,
-                    Color.rgb(221, 214, 254)
-            );
-
-            rateButton.setBackground(
-                    rateBackground
-            );
-
-            LinearLayout.LayoutParams rateParams =
-                    new LinearLayout.LayoutParams(
-                            ViewGroup.LayoutParams.MATCH_PARENT,
-                            ViewGroup.LayoutParams.WRAP_CONTENT
-                    );
-
-            rateParams.setMargins(
+            completedRow.setPadding(
                     0,
                     8,
                     0,
                     0
             );
 
-            rateButton.setLayoutParams(
-                    rateParams
+            // =========================
+            // APP FEEDBACK
+            // =========================
+
+            Button feedbackButton =
+                    createColoredButton(
+                            "App Feedback",
+                            PRIMARY
+                    );
+
+            feedbackButton.setOnClickListener(v -> {
+
+                Intent intent =
+                        new Intent(
+                                MyBookingsActivity.this,
+                                AppFeedbackActivity.class
+                        );
+
+                startActivity(intent);
+            });
+
+            completedRow.addView(
+                    feedbackButton,
+                    createButtonParams()
             );
+
+            // =========================
+            // RATE & REVIEW
+            // =========================
+
+            Button rateButton =
+                    createColoredButton(
+                            "Rate & Review",
+                            Color.parseColor("#8B5CF6")
+                    );
 
             rateButton.setOnClickListener(v -> {
 
                 Intent intent =
                         new Intent(
                                 MyBookingsActivity.this,
-                                InvoiceActivity.class
+                                RateReviewActivity.class
                         );
 
                 intent.putExtra(
-                        InvoiceActivity.EXTRA_BOOKING_ID,
+                        RateReviewActivity.EXTRA_BOOKING_ID,
                         bookingId
                 );
 
                 intent.putExtra(
-                        InvoiceActivity.EXTRA_WORKER_NAME,
+                        RateReviewActivity.EXTRA_WORKER_NAME,
                         workerName
                 );
 
                 intent.putExtra(
-                        InvoiceActivity.EXTRA_SERVICE,
+                        RateReviewActivity.EXTRA_SERVICE,
                         serviceTitle
                 );
 
                 intent.putExtra(
-                        InvoiceActivity.EXTRA_RATE,
+                        RateReviewActivity.EXTRA_RATE,
                         workerRate
                 );
 
                 startActivity(intent);
             });
 
-            buttonRow.addView(
-                    rateButton
+            completedRow.addView(
+                    rateButton,
+                    createButtonParams()
+            );
+
+            card.addView(
+                    completedRow
             );
         }
-
-        card.addView(
-                buttonRow
-        );
 
         bookingsContainer.addView(
                 card
         );
     }
 
-    private TextView createInfoText(
-            String text,
-            boolean bold) {
+    // =========================================================
+    // CURRENT CUSTOMER NAME
+    // =========================================================
 
-        TextView textView =
-                new TextView(this);
+    private String getCurrentCustomerName() {
 
-        textView.setText(
-                text
-        );
+        FirebaseUser user =
+                auth.getCurrentUser();
 
-        textView.setTextSize(14);
+        if (user != null &&
+                user.getDisplayName() != null &&
+                !user.getDisplayName()
+                        .trim()
+                        .isEmpty()) {
 
-        textView.setTextColor(
-                Color.rgb(71, 85, 105)
-        );
-
-        if (bold) {
-
-            textView.setTypeface(
-                    null,
-                    Typeface.BOLD
-            );
-
-            textView.setTextColor(
-                    Color.rgb(22, 101, 52)
-            );
+            return user.getDisplayName().trim();
         }
 
-        textView.setPadding(
+        // ChatActivity users collection se actual
+        // customer name dobara load kar legi.
+        return "Customer";
+    }
+
+    // =========================================================
+    // INFO TEXT
+    // =========================================================
+
+    private TextView createInfoText(
+            String text) {
+
+        TextView tv =
+                new TextView(this);
+
+        tv.setText(text);
+        tv.setTextSize(14);
+        tv.setTextColor(MUTED);
+        tv.setPadding(
                 0,
-                5,
+                4,
                 0,
-                5
+                4
         );
 
-        return textView;
+        return tv;
     }
+
+    // =========================================================
+    // COLORED BUTTON
+    // =========================================================
+
+    private Button createColoredButton(
+            String text,
+            int color) {
+
+        Button button =
+                new Button(this);
+
+        button.setText(text);
+        button.setTextColor(
+                Color.WHITE
+        );
+
+        button.setTextSize(14);
+
+        button.setTypeface(
+                Typeface.DEFAULT,
+                Typeface.BOLD
+        );
+
+        button.setAllCaps(false);
+
+        button.setGravity(
+                Gravity.CENTER
+        );
+
+        GradientDrawable bg =
+                new GradientDrawable();
+
+        bg.setColor(color);
+
+        bg.setCornerRadius(
+                18
+        );
+
+        button.setBackground(
+                bg
+        );
+
+        button.setPadding(
+                12,
+                8,
+                12,
+                8
+        );
+
+        return button;
+    }
+
+    // =========================================================
+    // BUTTON PARAMS
+    // =========================================================
+
+    private LinearLayout.LayoutParams createButtonParams() {
+
+        LinearLayout.LayoutParams params =
+                new LinearLayout.LayoutParams(
+                        0,
+                        56,
+                        1
+                );
+
+        params.setMargins(
+                5,
+                0,
+                5,
+                0
+        );
+
+        return params;
+    }
+
+    // =========================================================
+    // FIRESTORE STRING VALUE
+    // =========================================================
 
     private String getStringValue(
             Map<String, Object> data,
-            String key) {
+            String key,
+            String defaultValue) {
 
         Object value =
                 data.get(key);
 
         if (value == null) {
-            return "";
+            return defaultValue;
         }
 
-        return String.valueOf(value);
+        String result =
+                String.valueOf(value);
+
+        if (result.trim().isEmpty()) {
+            return defaultValue;
+        }
+
+        return result;
     }
 }

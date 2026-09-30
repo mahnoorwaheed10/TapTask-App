@@ -18,6 +18,7 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
+
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -747,15 +748,56 @@ public class WorkerDashboardActivity extends AppCompatActivity {
                         String status =
                                 doc.getString("status");
 
+                        // =================================================
+                        // COMPLETED JOBS
+                        // =================================================
+
                         if ("Completed".equals(status)) {
 
                             completedCount++;
 
-                            String rate =
-                                    doc.getString("workerRate");
+                            /*
+                             * IMPORTANT:
+                             *
+                             * A completed job should NOT automatically
+                             * increase Total Earned.
+                             *
+                             * The customer must first complete payment.
+                             *
+                             * PaymentActivity sets:
+                             *
+                             * paymentStatus = "Paid"
+                             *
+                             * only after:
+                             *
+                             * 1. Cash -> YES, PAID
+                             * 2. Online -> successful test payment
+                             *
+                             * Therefore earnings are counted only when
+                             * BOTH conditions are true:
+                             *
+                             * status == Completed
+                             * AND
+                             * paymentStatus == Paid
+                             */
 
-                            totalEarned +=
-                                    parseRate(rate);
+                            String paymentStatus =
+                                    doc.getString(
+                                            "paymentStatus"
+                                    );
+
+                            if ("Paid".equalsIgnoreCase(
+                                    paymentStatus
+                            )) {
+
+                                String rate =
+                                        doc.getString(
+                                                "workerRate"
+                                        );
+
+                                totalEarned +=
+                                        parseRate(rate);
+                            }
 
                             continue;
                         }
@@ -998,6 +1040,7 @@ public class WorkerDashboardActivity extends AppCompatActivity {
                         )
                 );
     }
+
     // =========================================================
     // CREATE WORKER CHAT CARD
     // =========================================================
@@ -1141,6 +1184,13 @@ public class WorkerDashboardActivity extends AppCompatActivity {
             intent.putExtra(
                     ChatActivity.EXTRA_CUSTOMER_ID,
                     customerId
+            );
+
+            // IMPORTANT:
+            // This chat is opened from the WORKER side.
+            intent.putExtra(
+                    ChatActivity.EXTRA_IS_WORKER,
+                    true
             );
 
             startActivity(intent);
@@ -1665,6 +1715,13 @@ public class WorkerDashboardActivity extends AppCompatActivity {
             intent.putExtra(
                     ChatActivity.EXTRA_CUSTOMER_ID,
                     item.customerId
+            );
+
+            // IMPORTANT:
+            // This chat is opened from the WORKER side.
+            intent.putExtra(
+                    ChatActivity.EXTRA_IS_WORKER,
+                    true
             );
 
             startActivity(intent);

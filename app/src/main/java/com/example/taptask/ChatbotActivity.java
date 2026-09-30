@@ -421,8 +421,14 @@ public class ChatbotActivity extends AppCompatActivity {
         TextView bubble =
                 new TextView(this);
 
+        // Remove unwanted Markdown symbols from Groq response
+        String cleanMessage =
+                message.replace("**", "")
+                        .replace("-----", "")
+                        .replace("|", "");
+
         bubble.setText(
-                message
+                cleanMessage
         );
 
         bubble.setTextSize(
@@ -507,4 +513,4 @@ public class ChatbotActivity extends AppCompatActivity {
         return (int)
                 (value * density);
     }
-}
+};

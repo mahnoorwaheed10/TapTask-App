@@ -1,7 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
-    <uses-permission android:name="android.permission.INTERNET"/>
+
+    <!-- Internet Permission -->
+    <uses-permission android:name="android.permission.INTERNET" />
+
+    <!-- Location Permissions -->
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
 
     <application
         android:allowBackup="true"
@@ -12,36 +18,101 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.TapTask">
+
         <activity
             android:name=".MainActivity"
             android:exported="true">
+
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+
         </activity>
 
-        <activity android:name=".AuthActivity" android:exported="false"/>
-        <activity android:name=".HomeActivity" android:exported="false"/>
-        <activity android:name=".SubCategoryActivity" android:exported="false"/>
-        <activity android:name=".WorkersListActivity" android:exported="false"/>
-        <activity android:name=".BookingActivity" android:exported="false"/>
-        <activity android:name=".PaymentActivity" android:exported="false"/>
-        <activity android:name=".MyBookingsActivity" android:exported="false"/>
-        <activity android:name=".ChatActivity" android:exported="false"/>
-        <activity android:name=".InvoiceActivity" android:exported="false"/>
-        <activity android:name=".ProfileActivity" android:exported="false"/>
-        <activity android:name=".WorkerDashboardActivity" android:exported="false"/>
-        <activity android:name=".WorkerProfileActivity" android:exported="false"/>
-        <activity android:name=".WorkerProfileViewActivity" android:exported="false"/>
-        <activity android:name=".AdminDashboardActivity" android:exported="false"/>
-        <activity android:name=".ForgotPasswordActivity" />
-        <activity android:name=".ChatbotActivity" />
+        <activity
+            android:name=".AuthActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".HomeActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".SubCategoryActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".WorkersListActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".BookingActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".PaymentActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".MyBookingsActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".ChatActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".ProfileActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".WorkerDashboardActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".WorkerProfileActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".WorkerProfileViewActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".AdminDashboardActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".ForgotPasswordActivity" />
+
+        <activity
+            android:name=".ChatbotActivity" />
+
         <activity
             android:name=".AdminManagementActivity"
             android:exported="false" />
 
+        <activity
+            android:name=".AdminSettingsActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".AdminProfileActivity" />
+
+        <activity
+            android:name=".AdminPaymentSettingsActivity" />
+
+        <activity
+            android:name=".AdminAboutActivity" />
+
+        <activity
+            android:name=".RateReviewActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".AppFeedbackActivity"
+            android:exported="false" />
 
     </application>
 

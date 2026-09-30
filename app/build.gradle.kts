@@ -41,6 +41,7 @@ dependencies {
     implementation(libs.material)
     implementation(libs.activity)
     implementation(libs.constraintlayout)
+    implementation("com.google.android.gms:play-services-location:21.4.0")
 
     // Firebase
     implementation(platform("com.google.firebase:firebase-bom:33.7.0"))
@@ -48,8 +49,6 @@ dependencies {
     implementation("com.google.firebase:firebase-firestore")
     implementation("com.google.firebase:firebase-storage")
 
-    // Stripe
-    implementation("com.stripe:stripe-android:21.25.0")
 
     // Testing
     testImplementation(libs.junit)

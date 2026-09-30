@@ -22,7 +22,7 @@
             android:text="←"
             android:textColor="@color/white"
             android:textSize="22sp"
-            android:paddingEnd="16dp"/>
+            android:paddingEnd="16dp" />
 
         <TextView
             android:id="@+id/tvChatWorkerName"
@@ -32,14 +32,17 @@
             android:text="Worker Name"
             android:textColor="@color/white"
             android:textSize="17sp"
-            android:textStyle="bold"/>
+            android:textStyle="bold" />
 
     </LinearLayout>
 
+    <!-- Chat messages -->
     <ScrollView
+        android:id="@+id/chatScrollView"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1">
+        android:layout_weight="1"
+        android:fillViewport="true">
 
         <LinearLayout
             android:id="@+id/chatMessagesContainer"
@@ -48,22 +51,25 @@
             android:orientation="vertical"
             android:padding="16dp">
 
-            <!-- Chat bubbles added programmatically -->
+            <!-- Chat bubbles are added programmatically -->
 
         </LinearLayout>
 
     </ScrollView>
 
-    <!-- Mark as completed button -->
+    <!-- Mark as completed -->
     <Button
         android:id="@+id/btnMarkCompleted"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/mark_completed"
         style="@style/PillButton"
-        android:layout_margin="16dp"/>
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp" />
 
-    <!-- Message input -->
+    <!-- Message input area -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -72,6 +78,7 @@
         android:background="@color/card"
         android:padding="10dp">
 
+        <!-- Message field -->
         <EditText
             android:id="@+id/etChatMessage"
             android:layout_width="0dp"
@@ -79,8 +86,27 @@
             android:layout_weight="1"
             style="@style/InputField"
             android:hint="@string/type_message"
-            android:layout_marginEnd="8dp"/>
+            android:inputType="textCapSentences|textMultiLine"
+            android:maxLines="3"
+            android:layout_marginEnd="6dp" />
 
+        <!-- Location button -->
+        <TextView
+            android:id="@+id/btnSendLocation"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="📍"
+            android:textSize="22sp"
+            android:textColor="@color/white"
+            android:background="@drawable/circle_avatar_bg"
+            android:padding="10dp"
+            android:gravity="center"
+            android:clickable="true"
+            android:focusable="true"
+            android:layout_marginEnd="6dp"
+            android:contentDescription="Send location" />
+
+        <!-- Send message button -->
         <TextView
             android:id="@+id/btnSendMessage"
             android:layout_width="wrap_content"
@@ -90,7 +116,10 @@
             android:textSize="18sp"
             android:background="@drawable/circle_avatar_bg"
             android:padding="12dp"
-            android:gravity="center"/>
+            android:gravity="center"
+            android:clickable="true"
+            android:focusable="true"
+            android:contentDescription="Send message" />
 
     </LinearLayout>
 

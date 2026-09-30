@@ -49,16 +49,30 @@ public class AdminDashboardActivity extends AppCompatActivity {
 
         bindViews();
         setupClicks();
+        setupBottomNavigation();
         loadDashboardData();
     }
 
+    // ============================================================
+    // BIND VIEWS
+    // ============================================================
+
     private void bindViews() {
 
-        tvTotalUsers = findViewById(R.id.tvTotalUsers);
-        tvTotalWorkers = findViewById(R.id.tvTotalWorkers);
-        tvPendingVerification = findViewById(R.id.tvPendingVerification);
-        tvTotalBookings = findViewById(R.id.tvTotalBookings);
-        tvTotalRevenue = findViewById(R.id.tvTotalRevenue);
+        tvTotalUsers =
+                findViewById(R.id.tvTotalUsers);
+
+        tvTotalWorkers =
+                findViewById(R.id.tvTotalWorkers);
+
+        tvPendingVerification =
+                findViewById(R.id.tvPendingVerification);
+
+        tvTotalBookings =
+                findViewById(R.id.tvTotalBookings);
+
+        tvTotalRevenue =
+                findViewById(R.id.tvTotalRevenue);
 
         pendingWorkersContainer =
                 findViewById(R.id.pendingWorkersContainer);
@@ -73,116 +87,264 @@ public class AdminDashboardActivity extends AppCompatActivity {
 
     private void setupClicks() {
 
-        View manageUsers = findViewById(R.id.btnManageUsers);
+        // ========================================================
+        // ADMIN SETTINGS
+        // ========================================================
+
+        View adminSettings =
+                findViewById(R.id.btnAdminSettings);
+
+        if (adminSettings != null) {
+
+            adminSettings.setOnClickListener(v -> {
+
+                Intent intent =
+                        new Intent(
+                                AdminDashboardActivity.this,
+                                AdminSettingsActivity.class
+                        );
+
+                startActivity(intent);
+            });
+        }
+
+        // ========================================================
+        // MANAGE USERS
+        // ========================================================
+
+        View manageUsers =
+                findViewById(R.id.btnManageUsers);
 
         if (manageUsers != null) {
+
             manageUsers.setOnClickListener(v -> {
 
-                Intent intent = new Intent(
-                        AdminDashboardActivity.this,
-                        AdminManagementActivity.class
+                Intent intent =
+                        new Intent(
+                                AdminDashboardActivity.this,
+                                AdminManagementActivity.class
+                        );
+
+                intent.putExtra(
+                        "MODE",
+                        "USERS"
                 );
 
-                intent.putExtra("MODE", "USERS");
                 startActivity(intent);
             });
         }
 
+        // ========================================================
+        // MANAGE WORKERS
+        // ========================================================
 
-        View manageWorkers = findViewById(R.id.btnManageWorkers);
+        View manageWorkers =
+                findViewById(R.id.btnManageWorkers);
 
         if (manageWorkers != null) {
+
             manageWorkers.setOnClickListener(v -> {
 
-                Intent intent = new Intent(
-                        AdminDashboardActivity.this,
-                        AdminManagementActivity.class
+                Intent intent =
+                        new Intent(
+                                AdminDashboardActivity.this,
+                                AdminManagementActivity.class
+                        );
+
+                intent.putExtra(
+                        "MODE",
+                        "WORKERS"
                 );
 
-                intent.putExtra("MODE", "WORKERS");
                 startActivity(intent);
             });
         }
 
+        // ========================================================
+        // MANAGE BOOKINGS
+        // ========================================================
 
-        View manageBookings = findViewById(R.id.btnManageBookings);
+        View manageBookings =
+                findViewById(R.id.btnManageBookings);
 
         if (manageBookings != null) {
+
             manageBookings.setOnClickListener(v -> {
 
-                Intent intent = new Intent(
-                        AdminDashboardActivity.this,
-                        AdminManagementActivity.class
+                Intent intent =
+                        new Intent(
+                                AdminDashboardActivity.this,
+                                AdminManagementActivity.class
+                        );
+
+                intent.putExtra(
+                        "MODE",
+                        "BOOKINGS"
                 );
 
-                intent.putExtra("MODE", "BOOKINGS");
                 startActivity(intent);
             });
         }
 
+        // ========================================================
+        // MANAGE AREAS
+        // ========================================================
 
-        View manageAreas = findViewById(R.id.btnManageAreas);
+        View manageAreas =
+                findViewById(R.id.btnManageAreas);
 
         if (manageAreas != null) {
+
             manageAreas.setOnClickListener(v -> {
 
-                Intent intent = new Intent(
-                        AdminDashboardActivity.this,
-                        AdminManagementActivity.class
+                Intent intent =
+                        new Intent(
+                                AdminDashboardActivity.this,
+                                AdminManagementActivity.class
+                        );
+
+                intent.putExtra(
+                        "MODE",
+                        "AREAS"
                 );
 
-                intent.putExtra("MODE", "AREAS");
                 startActivity(intent);
             });
         }
 
+        // ========================================================
+        // VIEW ALL BOOKINGS
+        // ========================================================
 
         View viewAllBookings =
                 findViewById(R.id.btnViewAllBookings);
 
         if (viewAllBookings != null) {
+
             viewAllBookings.setOnClickListener(v -> {
 
-                Intent intent = new Intent(
-                        AdminDashboardActivity.this,
-                        AdminManagementActivity.class
+                Intent intent =
+                        new Intent(
+                                AdminDashboardActivity.this,
+                                AdminManagementActivity.class
+                        );
+
+                intent.putExtra(
+                        "MODE",
+                        "BOOKINGS"
                 );
 
-                intent.putExtra("MODE", "BOOKINGS");
                 startActivity(intent);
             });
         }
 
+        // ========================================================
+        // VIEW PENDING WORKERS
+        // ========================================================
 
         View viewPendingWorkers =
                 findViewById(R.id.btnViewPendingWorkers);
 
         if (viewPendingWorkers != null) {
+
             viewPendingWorkers.setOnClickListener(v -> {
 
-                Intent intent = new Intent(
-                        AdminDashboardActivity.this,
-                        AdminManagementActivity.class
+                Intent intent =
+                        new Intent(
+                                AdminDashboardActivity.this,
+                                AdminManagementActivity.class
+                        );
+
+                intent.putExtra(
+                        "MODE",
+                        "PENDING_WORKERS"
                 );
 
-                intent.putExtra("MODE", "PENDING_WORKERS");
                 startActivity(intent);
             });
         }
 
+        // ========================================================
+        // TOP STATISTICS BUTTON REMOVED
+        // ========================================================
+        /*
+         * btnStatistics intentionally removed.
+         *
+         * Statistics is now available only from
+         * the bottom navigation.
+         */
+    }
+
+    // ============================================================
+    // BOTTOM NAVIGATION
+    // ============================================================
+
+    private void setupBottomNavigation() {
+
+        View home =
+                findViewById(R.id.btnNavHome);
 
         View statistics =
-                findViewById(R.id.btnStatistics);
+                findViewById(R.id.btnNavStatistics);
+
+        View feedback =
+                findViewById(R.id.btnNavFeedback);
+
+        // --------------------------------------------------------
+        // HOME
+        // --------------------------------------------------------
+
+        if (home != null) {
+
+            home.setOnClickListener(v -> {
+
+                // Already on dashboard.
+                // No Toast needed.
+            });
+        }
+
+        // --------------------------------------------------------
+        // STATISTICS
+        // --------------------------------------------------------
 
         if (statistics != null) {
+
             statistics.setOnClickListener(v -> {
 
-                Intent intent = new Intent(
-                        AdminDashboardActivity.this,
-                        AdminManagementActivity.class
+                Intent intent =
+                        new Intent(
+                                AdminDashboardActivity.this,
+                                AdminManagementActivity.class
+                        );
+
+                intent.putExtra(
+                        "MODE",
+                        "STATISTICS"
                 );
 
-                intent.putExtra("MODE", "STATISTICS");
+                startActivity(intent);
+            });
+        }
+
+        // --------------------------------------------------------
+        // APP FEEDBACK
+        // --------------------------------------------------------
+
+        if (feedback != null) {
+
+            feedback.setOnClickListener(v -> {
+
+                Intent intent =
+                        new Intent(
+                                AdminDashboardActivity.this,
+                                AdminManagementActivity.class
+                        );
+
+                intent.putExtra(
+                        "MODE",
+                        "APP_FEEDBACK"
+                );
+
                 startActivity(intent);
             });
         }
@@ -209,7 +371,8 @@ public class AdminDashboardActivity extends AppCompatActivity {
                 .get()
                 .addOnSuccessListener(snapshot -> {
 
-                    int totalUsers = snapshot.size();
+                    int totalUsers =
+                            snapshot.size();
 
                     tvTotalUsers.setText(
                             String.valueOf(totalUsers)
@@ -230,7 +393,8 @@ public class AdminDashboardActivity extends AppCompatActivity {
                 .get()
                 .addOnSuccessListener(snapshot -> {
 
-                    int totalWorkers = snapshot.size();
+                    int totalWorkers =
+                            snapshot.size();
 
                     int pendingCount = 0;
 
@@ -239,18 +403,23 @@ public class AdminDashboardActivity extends AppCompatActivity {
                     for (DocumentSnapshot worker :
                             snapshot.getDocuments()) {
 
-                        String status = getString(
-                                worker,
-                                "verificationStatus",
-                                "pending"
-                        );
+                        String status =
+                                getString(
+                                        worker,
+                                        "verificationStatus",
+                                        "pending"
+                                );
 
-                        if (status.equalsIgnoreCase("pending")) {
+                        if (status.equalsIgnoreCase(
+                                "pending")) {
 
                             pendingCount++;
 
                             if (pendingWorkers.size() < 2) {
-                                pendingWorkers.add(worker);
+
+                                pendingWorkers.add(
+                                        worker
+                                );
                             }
                         }
                     }
@@ -268,9 +437,11 @@ public class AdminDashboardActivity extends AppCompatActivity {
                 .addOnFailureListener(e -> {
 
                     tvTotalWorkers.setText("0");
+
                     tvPendingVerification.setText("0");
 
                     pendingWorkers.clear();
+
                     renderPendingWorkers();
                 });
     }
@@ -285,7 +456,8 @@ public class AdminDashboardActivity extends AppCompatActivity {
                 .get()
                 .addOnSuccessListener(snapshot -> {
 
-                    int totalBookings = snapshot.size();
+                    int totalBookings =
+                            snapshot.size();
 
                     tvTotalBookings.setText(
                             String.valueOf(totalBookings)
@@ -298,9 +470,13 @@ public class AdminDashboardActivity extends AppCompatActivity {
                 .addOnFailureListener(e -> {
 
                     tvTotalBookings.setText("0");
-                    tvTotalRevenue.setText("Rs. 0");
 
-                    recentActivityContainer.removeAllViews();
+                    tvTotalRevenue.setText(
+                            "Rs. 0"
+                    );
+
+                    recentActivityContainer
+                            .removeAllViews();
 
                     showEmptyRecentBookings();
                 });
@@ -325,7 +501,8 @@ public class AdminDashboardActivity extends AppCompatActivity {
         }
 
         tvTotalRevenue.setText(
-                "Rs. " + formatNumber(totalRevenue)
+                "Rs. " +
+                        formatNumber(totalRevenue)
         );
     }
 
@@ -339,33 +516,45 @@ public class AdminDashboardActivity extends AppCompatActivity {
         recentBookings.clear();
 
         List<DocumentSnapshot> allBookings =
-                new ArrayList<>(snapshot.getDocuments());
+                new ArrayList<>(
+                        snapshot.getDocuments()
+                );
 
         allBookings.sort((a, b) -> {
 
-            Object aCreated = a.get("createdAt");
-            Object bCreated = b.get("createdAt");
+            Object aCreated =
+                    a.get("createdAt");
 
-            if (aCreated == null && bCreated == null) {
+            Object bCreated =
+                    b.get("createdAt");
+
+            if (aCreated == null &&
+                    bCreated == null) {
+
                 return 0;
             }
 
             if (aCreated == null) {
+
                 return 1;
             }
 
             if (bCreated == null) {
+
                 return -1;
             }
 
             return bCreated.toString()
-                    .compareTo(aCreated.toString());
+                    .compareTo(
+                            aCreated.toString()
+                    );
         });
 
-        int limit = Math.min(
-                3,
-                allBookings.size()
-        );
+        int limit =
+                Math.min(
+                        3,
+                        allBookings.size()
+                );
 
         for (int i = 0; i < limit; i++) {
 
@@ -379,11 +568,13 @@ public class AdminDashboardActivity extends AppCompatActivity {
 
     private void renderRecentBookings() {
 
-        recentActivityContainer.removeAllViews();
+        recentActivityContainer
+                .removeAllViews();
 
         if (recentBookings.isEmpty()) {
 
             showEmptyRecentBookings();
+
             return;
         }
 
@@ -391,7 +582,9 @@ public class AdminDashboardActivity extends AppCompatActivity {
                 recentBookings) {
 
             recentActivityContainer.addView(
-                    createRecentBookingCard(booking)
+                    createRecentBookingCard(
+                            booking
+                    )
             );
         }
     }
@@ -434,18 +627,12 @@ public class AdminDashboardActivity extends AppCompatActivity {
                 cardParams
         );
 
-
-        // TOP ROW
-
         LinearLayout topRow =
                 new LinearLayout(this);
 
         topRow.setGravity(
                 Gravity.CENTER_VERTICAL
         );
-
-
-        // BOOKING ICON
 
         TextView icon =
                 createCircleIcon(
@@ -454,9 +641,6 @@ public class AdminDashboardActivity extends AppCompatActivity {
                 );
 
         topRow.addView(icon);
-
-
-        // INFO
 
         LinearLayout info =
                 new LinearLayout(this);
@@ -479,7 +663,6 @@ public class AdminDashboardActivity extends AppCompatActivity {
                 infoParams
         );
 
-
         String service =
                 getString(
                         booking,
@@ -494,7 +677,6 @@ public class AdminDashboardActivity extends AppCompatActivity {
         info.addView(
                 createMainText(service)
         );
-
 
         String customer =
                 getString(
@@ -513,9 +695,6 @@ public class AdminDashboardActivity extends AppCompatActivity {
 
         topRow.addView(info);
 
-
-        // STATUS
-
         String status =
                 getString(
                         booking,
@@ -528,9 +707,6 @@ public class AdminDashboardActivity extends AppCompatActivity {
         );
 
         card.addView(topRow);
-
-
-        // DATE + TIME
 
         String date =
                 getString(
@@ -553,21 +729,20 @@ public class AdminDashboardActivity extends AppCompatActivity {
             dateTime = date;
 
             if (!time.isEmpty()) {
-                dateTime += "  •  " + time;
+
+                dateTime +=
+                        "  •  " +
+                                time;
             }
         }
-
 
         if (!dateTime.isEmpty()) {
 
             TextView dateText =
                     createSmallText(
-                            "📅 " + dateTime
+                            "📅 " +
+                                    dateTime
                     );
-
-            // FIX:
-            // Directly create LayoutParams instead of
-            // calling getLayoutParams(), which was null.
 
             LinearLayout.LayoutParams dateParams =
                     new LinearLayout.LayoutParams(
@@ -594,7 +769,8 @@ public class AdminDashboardActivity extends AppCompatActivity {
 
     private void renderPendingWorkers() {
 
-        pendingWorkersContainer.removeAllViews();
+        pendingWorkersContainer
+                .removeAllViews();
 
         if (pendingWorkers.isEmpty()) {
 
@@ -621,7 +797,9 @@ public class AdminDashboardActivity extends AppCompatActivity {
                 pendingWorkers) {
 
             pendingWorkersContainer.addView(
-                    createPendingWorkerCard(worker)
+                    createPendingWorkerCard(
+                            worker
+                    )
             );
         }
     }
@@ -651,7 +829,6 @@ public class AdminDashboardActivity extends AppCompatActivity {
                 createCardBackground()
         );
 
-
         LinearLayout.LayoutParams params =
                 new LinearLayout.LayoutParams(
                         -1,
@@ -663,7 +840,6 @@ public class AdminDashboardActivity extends AppCompatActivity {
 
         card.setLayoutParams(params);
 
-
         LinearLayout top =
                 new LinearLayout(this);
 
@@ -671,14 +847,12 @@ public class AdminDashboardActivity extends AppCompatActivity {
                 Gravity.CENTER_VERTICAL
         );
 
-
         String workerName =
                 getString(
                         worker,
                         "name",
                         "Worker"
                 );
-
 
         TextView avatar =
                 createCircleIcon(
@@ -688,14 +862,12 @@ public class AdminDashboardActivity extends AppCompatActivity {
 
         top.addView(avatar);
 
-
         LinearLayout info =
                 new LinearLayout(this);
 
         info.setOrientation(
                 LinearLayout.VERTICAL
         );
-
 
         LinearLayout.LayoutParams infoParams =
                 new LinearLayout.LayoutParams(
@@ -711,11 +883,9 @@ public class AdminDashboardActivity extends AppCompatActivity {
                 infoParams
         );
 
-
         info.addView(
                 createMainText(workerName)
         );
-
 
         String profession =
                 getString(
@@ -731,7 +901,6 @@ public class AdminDashboardActivity extends AppCompatActivity {
         info.addView(
                 createSmallText(profession)
         );
-
 
         String area =
                 getString(
@@ -749,9 +918,7 @@ public class AdminDashboardActivity extends AppCompatActivity {
             );
         }
 
-
         top.addView(info);
-
 
         top.addView(
                 createBadge(
@@ -763,16 +930,12 @@ public class AdminDashboardActivity extends AppCompatActivity {
 
         card.addView(top);
 
-
-        // BUTTONS
-
         LinearLayout buttons =
                 new LinearLayout(this);
 
         buttons.setOrientation(
                 LinearLayout.HORIZONTAL
         );
-
 
         LinearLayout.LayoutParams buttonRowParams =
                 new LinearLayout.LayoutParams(
@@ -787,14 +950,12 @@ public class AdminDashboardActivity extends AppCompatActivity {
                 buttonRowParams
         );
 
-
         TextView reject =
                 createActionButton(
                         "Reject",
                         "#FFF0F2",
                         "#BE3A48"
                 );
-
 
         TextView verify =
                 createActionButton(
@@ -803,7 +964,6 @@ public class AdminDashboardActivity extends AppCompatActivity {
                         "#FFFFFF"
                 );
 
-
         reject.setOnClickListener(
                 v -> updateWorkerStatus(
                         worker,
@@ -811,14 +971,12 @@ public class AdminDashboardActivity extends AppCompatActivity {
                 )
         );
 
-
         verify.setOnClickListener(
                 v -> updateWorkerStatus(
                         worker,
                         "verified"
                 )
         );
-
 
         LinearLayout.LayoutParams rejectParams =
                 new LinearLayout.LayoutParams(
@@ -830,7 +988,6 @@ public class AdminDashboardActivity extends AppCompatActivity {
         reject.setLayoutParams(
                 rejectParams
         );
-
 
         LinearLayout.LayoutParams verifyParams =
                 new LinearLayout.LayoutParams(
@@ -845,7 +1002,6 @@ public class AdminDashboardActivity extends AppCompatActivity {
         verify.setLayoutParams(
                 verifyParams
         );
-
 
         buttons.addView(reject);
         buttons.addView(verify);
@@ -871,7 +1027,8 @@ public class AdminDashboardActivity extends AppCompatActivity {
                 )
                 .addOnSuccessListener(unused -> {
 
-                    if (newStatus.equals("verified")) {
+                    if (newStatus.equals(
+                            "verified")) {
 
                         Toast.makeText(
                                 this,
@@ -958,7 +1115,6 @@ public class AdminDashboardActivity extends AppCompatActivity {
         return tv;
     }
 
-
     private TextView createSmallText(
             String text) {
 
@@ -979,7 +1135,6 @@ public class AdminDashboardActivity extends AppCompatActivity {
 
         return tv;
     }
-
 
     private TextView createCircleIcon(
             String text,
@@ -1033,18 +1188,20 @@ public class AdminDashboardActivity extends AppCompatActivity {
         String background;
         String textColor;
 
-
-        if (status.equalsIgnoreCase("completed")) {
+        if (status.equalsIgnoreCase(
+                "completed")) {
 
             background = "#E0F6EA";
             textColor = "#168050";
 
-        } else if (status.equalsIgnoreCase("accepted")) {
+        } else if (status.equalsIgnoreCase(
+                "accepted")) {
 
             background = "#E1F2FF";
             textColor = "#2872A7";
 
-        } else if (status.equalsIgnoreCase("rejected")) {
+        } else if (status.equalsIgnoreCase(
+                "rejected")) {
 
             background = "#FFE7EA";
             textColor = "#BE3A48";
@@ -1055,14 +1212,12 @@ public class AdminDashboardActivity extends AppCompatActivity {
             textColor = "#B66A00";
         }
 
-
         return createBadge(
                 formatText(status),
                 background,
                 textColor
         );
     }
-
 
     private TextView createBadge(
             String text,
@@ -1106,7 +1261,6 @@ public class AdminDashboardActivity extends AppCompatActivity {
 
         return tv;
     }
-
 
     private TextView createActionButton(
             String text,
@@ -1161,7 +1315,6 @@ public class AdminDashboardActivity extends AppCompatActivity {
         );
     }
 
-
     private GradientDrawable roundedBackground(
             int fill,
             int stroke,
@@ -1208,7 +1361,6 @@ public class AdminDashboardActivity extends AppCompatActivity {
         return value;
     }
 
-
     private double extractAmount(
             DocumentSnapshot document,
             String field) {
@@ -1220,13 +1372,11 @@ public class AdminDashboardActivity extends AppCompatActivity {
             return 0;
         }
 
-
         if (value instanceof Number) {
 
             return ((Number) value)
                     .doubleValue();
         }
-
 
         String text =
                 value.toString()
@@ -1235,11 +1385,9 @@ public class AdminDashboardActivity extends AppCompatActivity {
                                 ""
                         );
 
-
         if (text.isEmpty()) {
             return 0;
         }
-
 
         try {
 
@@ -1250,7 +1398,6 @@ public class AdminDashboardActivity extends AppCompatActivity {
             return 0;
         }
     }
-
 
     private String formatNumber(
             double number) {
@@ -1264,14 +1411,12 @@ public class AdminDashboardActivity extends AppCompatActivity {
             );
         }
 
-
         return String.format(
                 Locale.getDefault(),
                 "%.2f",
                 number
         );
     }
-
 
     private String getInitial(
             String name) {
@@ -1282,14 +1427,12 @@ public class AdminDashboardActivity extends AppCompatActivity {
             return "W";
         }
 
-
         return name.trim()
                 .substring(0, 1)
                 .toUpperCase(
                         Locale.getDefault()
                 );
     }
-
 
     private String formatText(
             String text) {
@@ -1300,10 +1443,8 @@ public class AdminDashboardActivity extends AppCompatActivity {
             return "";
         }
 
-
         String clean =
                 text.trim();
-
 
         return clean.substring(0, 1)
                 .toUpperCase(
@@ -1311,7 +1452,6 @@ public class AdminDashboardActivity extends AppCompatActivity {
                 )
                 + clean.substring(1);
     }
-
 
     private int dp(int value) {
 

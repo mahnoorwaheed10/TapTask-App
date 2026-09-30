@@ -20,14 +20,21 @@
             android:paddingHorizontal="20dp"
             android:paddingVertical="18dp">
 
-            <TextView
+            <Button
                 android:id="@+id/btnBack"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="←"
                 android:textColor="@color/white"
                 android:textSize="22sp"
-                android:paddingEnd="16dp" />
+                android:textAllCaps="false"
+                android:background="@android:color/transparent"
+                android:minWidth="0dp"
+                android:minHeight="0dp"
+                android:paddingEnd="16dp"
+                android:paddingStart="0dp"
+                android:paddingTop="0dp"
+                android:paddingBottom="0dp" />
 
             <TextView
                 android:layout_width="0dp"
@@ -87,7 +94,7 @@
                     android:paddingHorizontal="18dp"
                     android:paddingVertical="12dp" />
 
-                <TextView
+                <Button
                     android:id="@+id/btnCopyNumber"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -95,10 +102,12 @@
                     android:textColor="@color/primary"
                     android:textSize="13sp"
                     android:textStyle="bold"
+                    android:textAllCaps="false"
+                    android:background="@android:color/transparent"
+                    android:minWidth="0dp"
+                    android:minHeight="0dp"
                     android:padding="8dp"
-                    android:layout_marginTop="8dp"
-                    android:clickable="true"
-                    android:focusable="true" />
+                    android:layout_marginTop="8dp" />
 
             </LinearLayout>
 
@@ -114,7 +123,7 @@
                 android:lineSpacingExtra="4dp"
                 android:layout_marginBottom="24dp" />
 
-            <!-- Stripe Payment Card -->
+            <!-- Old screenshot/payment area -->
             <LinearLayout
                 android:id="@+id/btnUploadScreenshot"
                 android:layout_width="match_parent"

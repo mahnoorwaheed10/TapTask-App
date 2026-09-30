@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/bg"
@@ -133,7 +135,9 @@
                 android:gravity="top"
                 android:layout_marginBottom="16dp"/>
 
+            <!-- Address label -->
             <TextView
+                android:id="@+id/tvBookingAddressLabel"
                 style="@style/InputLabel"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -164,9 +168,10 @@
                 style="@style/InputLabel"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/select_payment_method"
+                android:text="Select Payment Method"
                 android:layout_marginBottom="12dp"/>
 
+            <!-- Cash on Delivery -->
             <LinearLayout
                 android:id="@+id/paymentCash"
                 android:layout_width="match_parent"
@@ -193,7 +198,7 @@
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="@string/cash_on_delivery"
+                        android:text="Cash on Delivery"
                         android:textColor="@color/text_main"
                         android:textStyle="bold"
                         android:textSize="14sp"/>
@@ -201,7 +206,7 @@
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="@string/cash_desc"
+                        android:text="Pay after service"
                         android:textColor="@color/muted"
                         android:textSize="12sp"/>
 
@@ -209,50 +214,9 @@
 
             </LinearLayout>
 
+            <!-- Safepay Online Payment -->
             <LinearLayout
-                android:id="@+id/paymentEasypaisa"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:gravity="center_vertical"
-                android:background="@drawable/bg_payment_card"
-                android:padding="14dp"
-                android:layout_marginBottom="10dp">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="📱"
-                    android:textSize="22sp"
-                    android:paddingEnd="12dp"/>
-
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:orientation="vertical">
-
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="@string/easypaisa"
-                        android:textColor="@color/text_main"
-                        android:textStyle="bold"
-                        android:textSize="14sp"/>
-
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="@string/easypaisa_desc"
-                        android:textColor="@color/muted"
-                        android:textSize="12sp"/>
-
-                </LinearLayout>
-
-            </LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/paymentJazzcash"
+                android:id="@+id/paymentSafepay"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
@@ -264,7 +228,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="📱"
+                    android:text="💳"
                     android:textSize="22sp"
                     android:paddingEnd="12dp"/>
 
@@ -277,7 +241,7 @@
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="@string/jazzcash"
+                        android:text="Safepay"
                         android:textColor="@color/text_main"
                         android:textStyle="bold"
                         android:textSize="14sp"/>
@@ -285,7 +249,7 @@
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="@string/jazzcash_desc"
+                        android:text="Secure online payment"
                         android:textColor="@color/muted"
                         android:textSize="12sp"/>
 
@@ -293,6 +257,7 @@
 
             </LinearLayout>
 
+            <!-- Confirm Button -->
             <Button
                 android:id="@+id/btnConfirmBooking"
                 android:layout_width="match_parent"

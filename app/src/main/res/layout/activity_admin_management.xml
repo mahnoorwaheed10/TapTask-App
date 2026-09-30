@@ -106,4 +106,50 @@
 
     </ScrollView>
 
+    <!-- ================= FIXED BOTTOM NAVIGATION ================= -->
+
+    <LinearLayout
+        android:id="@+id/bottomNavigation"
+        android:layout_width="match_parent"
+        android:layout_height="70dp"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:background="#FFFFFF"
+        android:elevation="8dp">
+
+        <TextView
+            android:id="@+id/btnNavHome"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="⌂\nHome"
+            android:textSize="12sp"
+            android:textStyle="bold"
+            android:textColor="#6658D9" />
+
+        <TextView
+            android:id="@+id/btnNavStatistics"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="▥\nStatistics"
+            android:textSize="12sp"
+            android:textStyle="bold"
+            android:textColor="#6658D9" />
+
+        <TextView
+            android:id="@+id/btnNavFeedback"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="♡\nApp Feedback"
+            android:textSize="12sp"
+            android:textStyle="bold"
+            android:textColor="#6658D9" />
+
+    </LinearLayout>
+
 </LinearLayout>

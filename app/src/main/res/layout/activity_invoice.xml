@@ -27,7 +27,9 @@
                 android:text="←"
                 android:textColor="@color/white"
                 android:textSize="22sp"
-                android:paddingEnd="16dp"/>
+                android:paddingEnd="16dp"
+                android:clickable="true"
+                android:focusable="true" />
 
             <TextView
                 android:layout_width="0dp"
@@ -36,7 +38,7 @@
                 android:text="@string/invoice"
                 android:textColor="@color/white"
                 android:textSize="18sp"
-                android:textStyle="bold"/>
+                android:textStyle="bold" />
 
         </LinearLayout>
 
@@ -46,7 +48,7 @@
             android:orientation="vertical"
             android:padding="20dp">
 
-            <!-- Invoice card -->
+            <!-- Invoice Card -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -63,14 +65,15 @@
                     android:textSize="20sp"
                     android:textStyle="bold"
                     android:gravity="center"
-                    android:layout_marginBottom="16dp"/>
+                    android:layout_marginBottom="16dp" />
 
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
                     android:background="@color/border"
-                    android:layout_marginBottom="16dp"/>
+                    android:layout_marginBottom="16dp" />
 
+                <!-- Worker -->
                 <TextView
                     android:id="@+id/tvInvoiceWorker"
                     android:layout_width="match_parent"
@@ -78,8 +81,9 @@
                     android:text="Worker Name"
                     android:textColor="@color/text_main"
                     android:textStyle="bold"
-                    android:textSize="16sp"/>
+                    android:textSize="16sp" />
 
+                <!-- Service -->
                 <TextView
                     android:id="@+id/tvInvoiceService"
                     android:layout_width="match_parent"
@@ -87,16 +91,18 @@
                     android:text="Service"
                     android:textColor="@color/muted"
                     android:textSize="13sp"
-                    android:layout_marginBottom="12dp"/>
+                    android:layout_marginBottom="12dp" />
 
+                <!-- Date -->
                 <TextView
                     android:id="@+id/tvInvoiceDate"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="Date: -"
                     android:textColor="@color/muted"
-                    android:textSize="13sp"/>
+                    android:textSize="13sp" />
 
+                <!-- Payment -->
                 <TextView
                     android:id="@+id/tvInvoicePayment"
                     android:layout_width="match_parent"
@@ -104,14 +110,15 @@
                     android:text="Payment: -"
                     android:textColor="@color/muted"
                     android:textSize="13sp"
-                    android:layout_marginBottom="12dp"/>
+                    android:layout_marginBottom="12dp" />
 
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
                     android:background="@color/border"
-                    android:layout_marginBottom="12dp"/>
+                    android:layout_marginBottom="12dp" />
 
+                <!-- Total -->
                 <TextView
                     android:id="@+id/tvInvoiceTotal"
                     android:layout_width="match_parent"
@@ -120,10 +127,11 @@
                     android:textColor="@color/green"
                     android:textStyle="bold"
                     android:textSize="18sp"
-                    android:gravity="end"/>
+                    android:gravity="end" />
 
             </LinearLayout>
 
+            <!-- Warranty Notice -->
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -133,68 +141,16 @@
                 android:gravity="center"
                 android:background="@drawable/bg_chip_light"
                 android:padding="12dp"
-                android:layout_marginBottom="20dp"/>
+                android:layout_marginBottom="20dp" />
 
+            <!-- Print / Download -->
             <Button
                 android:id="@+id/btnPrintInvoice"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/print_download"
                 style="@style/PillButton.Outline"
-                android:layout_marginBottom="20dp"/>
-
-            <!-- Rating section -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:background="@drawable/bg_card"
-                android:padding="20dp"
-                android:gravity="center">
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="@string/rate_experience"
-                    android:textColor="@color/text_main"
-                    android:textStyle="bold"
-                    android:textSize="15sp"
-                    android:gravity="center"
-                    android:layout_marginBottom="16dp"/>
-
-                <LinearLayout
-                    android:id="@+id/starsContainer"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:layout_marginBottom="16dp">
-
-                    <TextView android:id="@+id/star1" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="☆" android:textSize="32sp" android:textColor="#FBBF24" android:padding="4dp"/>
-                    <TextView android:id="@+id/star2" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="☆" android:textSize="32sp" android:textColor="#FBBF24" android:padding="4dp"/>
-                    <TextView android:id="@+id/star3" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="☆" android:textSize="32sp" android:textColor="#FBBF24" android:padding="4dp"/>
-                    <TextView android:id="@+id/star4" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="☆" android:textSize="32sp" android:textColor="#FBBF24" android:padding="4dp"/>
-                    <TextView android:id="@+id/star5" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="☆" android:textSize="32sp" android:textColor="#FBBF24" android:padding="4dp"/>
-
-                </LinearLayout>
-
-                <EditText
-                    android:id="@+id/etReviewText"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    style="@style/InputField"
-                    android:hint="Write a short review (optional)"
-                    android:minLines="2"
-                    android:gravity="top"
-                    android:layout_marginBottom="16dp"/>
-
-                <Button
-                    android:id="@+id/btnSubmitRating"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Submit Rating"
-                    style="@style/PillButton"/>
-
-            </LinearLayout>
+                android:layout_marginBottom="20dp" />
 
         </LinearLayout>
 

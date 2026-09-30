@@ -26,6 +26,9 @@ public class WorkersListActivity extends AppCompatActivity {
     public static final String EXTRA_SUB_CAT = "sub_cat";
     public static final String EXTRA_SUB_CAT_TITLE = "sub_cat_title";
 
+    // NEW: Home / Shop / Online
+    public static final String EXTRA_MAIN_CAT = "main_cat";
+
     // ============================================================
     // VIEWS
     // ============================================================
@@ -57,6 +60,9 @@ public class WorkersListActivity extends AppCompatActivity {
     private String subCatKey;
     private String subCatTitle;
 
+    // NEW: Home / Shop / Online
+    private String mainCatKey;
+
     // ============================================================
     // ON CREATE
     // ============================================================
@@ -87,6 +93,11 @@ public class WorkersListActivity extends AppCompatActivity {
         subCatTitle =
                 getIntent().getStringExtra(EXTRA_SUB_CAT_TITLE);
 
+        // NEW:
+        // Home / Shop / Online receive karo
+        mainCatKey =
+                getIntent().getStringExtra(EXTRA_MAIN_CAT);
+
         if (subCatKey == null ||
                 subCatKey.trim().isEmpty()) {
 
@@ -97,6 +108,15 @@ public class WorkersListActivity extends AppCompatActivity {
                 subCatTitle.trim().isEmpty()) {
 
             subCatTitle = "Workers";
+        }
+
+        // NEW:
+        // Agar kisi purane flow se main category na aaye
+        // to Home default rahega.
+        if (mainCatKey == null ||
+                mainCatKey.trim().isEmpty()) {
+
+            mainCatKey = "home";
         }
 
         tvCategoryTitle.setText(subCatTitle);
@@ -490,6 +510,7 @@ public class WorkersListActivity extends AppCompatActivity {
                     ).show();
                 });
     }
+
     // ============================================================
     // GET FIELD
     // ============================================================
@@ -693,6 +714,7 @@ public class WorkersListActivity extends AppCompatActivity {
                 value.trim()
         );
     }
+
     // ============================================================
     // CATEGORY NORMALIZATION
     // ============================================================
@@ -1127,6 +1149,7 @@ public class WorkersListActivity extends AppCompatActivity {
         buttonRow.setLayoutParams(
                 buttonRowParams
         );
+
         // ========================================================
         // VIEW PROFILE BUTTON
         // ========================================================
@@ -1255,49 +1278,48 @@ public class WorkersListActivity extends AppCompatActivity {
 
         viewProfile.setOnClickListener(v -> {
 
-                    Intent intent = new Intent(
-                            WorkersListActivity.this,
-                            WorkerProfileViewActivity.class
-                    );
+            Intent intent = new Intent(
+                    WorkersListActivity.this,
+                    WorkerProfileViewActivity.class
+            );
 
-                    intent.putExtra(
-                            WorkerProfileViewActivity.EXTRA_WORKER_NAME,
-                            worker.name
-                    );
+            intent.putExtra(
+                    WorkerProfileViewActivity.EXTRA_WORKER_NAME,
+                    worker.name
+            );
 
-                    intent.putExtra(
-                            WorkerProfileViewActivity.EXTRA_WORKER_TITLE,
-                            worker.title
-                    );
+            intent.putExtra(
+                    WorkerProfileViewActivity.EXTRA_WORKER_TITLE,
+                    worker.title
+            );
 
-                    intent.putExtra(
-                            WorkerProfileViewActivity.EXTRA_WORKER_AREA,
-                            worker.area
-                    );
+            intent.putExtra(
+                    WorkerProfileViewActivity.EXTRA_WORKER_AREA,
+                    worker.area
+            );
 
-                    intent.putExtra(
-                            WorkerProfileViewActivity.EXTRA_WORKER_EXP,
-                            worker.experience
-                    );
+            intent.putExtra(
+                    WorkerProfileViewActivity.EXTRA_WORKER_EXP,
+                    worker.experience
+            );
 
-                    intent.putExtra(
-                            WorkerProfileViewActivity.EXTRA_WORKER_RATE,
-                            worker.rate
-                    );
+            intent.putExtra(
+                    WorkerProfileViewActivity.EXTRA_WORKER_RATE,
+                    worker.rate
+            );
 
-                    intent.putExtra(
-                            WorkerProfileViewActivity.EXTRA_WORKER_RATING,
-                            worker.rating
-                    );
+            intent.putExtra(
+                    WorkerProfileViewActivity.EXTRA_WORKER_RATING,
+                    worker.rating
+            );
 
-                    intent.putExtra(
-                            WorkerProfileViewActivity.EXTRA_WORKER_BIO,
-                            worker.title
-                    );
+            intent.putExtra(
+                    WorkerProfileViewActivity.EXTRA_WORKER_BIO,
+                    worker.title
+            );
 
-                    startActivity(intent);
-                }
-        );
+            startActivity(intent);
+        });
 
         // ========================================================
         // SEND REQUEST CLICK
@@ -1323,6 +1345,7 @@ public class WorkersListActivity extends AppCompatActivity {
                                     BookingActivity.class
                             );
 
+                    // EXISTING WORKER DATA
                     intent.putExtra(
                             BookingActivity.EXTRA_WORKER_NAME,
                             worker.name
@@ -1338,9 +1361,17 @@ public class WorkersListActivity extends AppCompatActivity {
                             worker.rate
                     );
 
+                    // NEW:
+                    // Home / Shop / Online BookingActivity ko pass
+                    intent.putExtra(
+                            BookingActivity.EXTRA_MAIN_CAT,
+                            mainCatKey
+                    );
+
                     startActivity(intent);
                 }
         );
+
         return card;
     }
 
